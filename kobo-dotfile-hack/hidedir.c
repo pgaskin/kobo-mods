@@ -40,8 +40,7 @@ static bool isproc(const char* proc) {
 constructor static void init() {
     #ifdef NICKEL_ONLY
     wrap = isproc("nickel");
-    #endif
-    #ifdef LS_ONLY
+    #elif LS_ONLY
     wrap = isproc("ls");
     #endif
 
