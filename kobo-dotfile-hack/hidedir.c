@@ -12,20 +12,18 @@
 #include <sys/types.h>
 
 #define constructor __attribute__((constructor))
-#define strcasecmp  __builtin_strcasecmp
-#define strncasecmp __builtin_strncasecmp
 
 static bool wrap = true;
 
-static struct dirent   *(*readdir_orig)(DIR *dir);
-static struct dirent64 *(*readdir64_orig)(DIR *dir);
-static int              (*readdir_r_orig)(DIR *dir, struct dirent *ent, struct dirent **res);
-static int              (*readdir64_r_orig)(DIR *dir, struct dirent64 *ent, struct dirent64 **res);
+static typeof(readdir)     *readdir_orig;
+static typeof(readdir64)   *readdir64_orig;
+static typeof(readdir_r)   *readdir_r_orig;
+static typeof(readdir64_r) *readdir64_r_orig;
 
 #ifdef USE_FULL_PATH
-static DIR  *(*opendir_orig)(const char *name);
-static DIR  *(*fdopendir_orig)(int fd);
-static int   (*closedir_orig)(DIR *dir);
+static typeof(opendir)   *opendir_orig;
+static typeof(fdopendir) *fdopendir_orig;
+static typeof(closedir)  *closedir_orig;
 static char *dirpaths[65535];
 #endif
 
@@ -47,8 +45,6 @@ constructor static void init() {
     wrap = isproc("ls");
     #endif
 
-    #pragma GCC diagnostic push
-    #pragma GCC diagnostic ignored "-Wpedantic"
     readdir_orig     = dlsym(RTLD_NEXT, "readdir");
     readdir64_orig   = dlsym(RTLD_NEXT, "readdir64");
     readdir_r_orig   = dlsym(RTLD_NEXT, "readdir_r");
@@ -59,7 +55,6 @@ constructor static void init() {
     fdopendir_orig   = dlsym(RTLD_NEXT, "fdopendir");
     closedir_orig    = dlsym(RTLD_NEXT, "closedir");
     #endif
-    #pragma GCC diagnostic pop
 }
 
 static bool should_hide(DIR *dir, const char *name);

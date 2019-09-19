@@ -1,0 +1,3 @@
+libhidedir_*.so
+ld.so.preload
+KoboRoot.tgz

@@ -4,7 +4,7 @@ PREFIX  ?= /usr/local/geek1011
 CONFIG   = -DUSE_FULL_PATH -DNICKEL_ONLY
 CFLAGS  ?= -march=armv7-a -mtune=cortex-a8 -mfpu=neon -mfloat-abi=hard -mthumb
 
-override CFLAGS := -Wall -shared -ldl -pedantic -std=c99 -fPIC $(CONFIG) $(CFLAGS)
+override CFLAGS := -Wall -shared -ldl -std=gnu99 -fPIC $(CONFIG) $(CFLAGS)
 
 .PHONY: all install uninstall clean
 
