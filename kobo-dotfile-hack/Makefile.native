@@ -1,0 +1,20 @@
+CC       = $(CROSS_PREFIX)gcc
+CONFIG   = -DLS_ONLY
+
+override CFLAGS := -Wall -shared -ldl -pedantic -std=c99 -fPIC $(CONFIG) $(CFLAGS)
+
+.PHONY: all clean test
+
+all: libhidedir_native.so
+
+clean:
+	rm -f libhidedir_native.so
+
+test: all
+	@echo "=== WITHOUT ==="
+	ls -lah $(HOME)
+	@echo "=== WITH ==="
+	LD_PRELOAD="$(PWD)/libhidedir_native.so" ls -lah $(HOME)
+
+libhidedir_native.so: hidedir.c
+	$(CC) -o $@ $^ $(CFLAGS)

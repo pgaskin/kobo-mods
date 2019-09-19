@@ -7,14 +7,14 @@ steps:
   commands:
   - cd ./kobo-dotfile-hack
   - mkdir -p ./tmp/.kobo ./tmp/.test ./tmp/.adobe-digital-editions ./tmp/.adds
-  - HOME=./tmp make
+  - HOME=./tmp make -f Makefile.native test
   depends_on: [clone]
 - name: build-kobo
   image: geek1011/kobo-toolchain:latest
   commands:
   - cd ./kobo-dotfile-hack
   - apt -qq update >/dev/null && apt -qq install -y make >/dev/null
-  - make KoboRoot.tgz CROSS_COMPILE=arm-nickel-linux-gnueabihf-
+  - make CROSS_PREFIX=arm-nickel-linux-gnueabihf-
   depends_on: [clone]
 - name: upload
   image: debian:9
