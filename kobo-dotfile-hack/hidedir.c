@@ -28,10 +28,9 @@ static char *dirpaths[65535];
 #endif
 
 static bool isproc(const char* proc) {
-    char buf[PATH_MAX];
+    char buf[PATH_MAX] = { 0 };
     ssize_t len;
     if ((len = readlink("/proc/self/exe", buf, PATH_MAX)) != -1) {
-        buf[len] = '\0';
         return strcmp(strrchr(buf, '/')+1, proc) == 0;
     }
     return false;
