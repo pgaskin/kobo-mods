@@ -101,7 +101,7 @@ WRAP_READDIR_R(dirent64, readdir64_r)
 
 #ifndef USE_FULL_PATH
 
-static bool should_hide(DIR *dir, const char *name) {
+static bool should_hide(DIR *dir __attribute__((unused)), const char *name) {
     if (strcmp(name, ".") == 0 || strcmp(name, "..") == 0) // show **/. **/..
         return false;
     if (strncasecmp(name, ".kobo", 5) == 0) // show **/.kobo*
