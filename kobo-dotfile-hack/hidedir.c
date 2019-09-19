@@ -27,6 +27,7 @@ static typeof(closedir)  *closedir_orig;
 static char *dirpaths[65535];
 #endif
 
+#if defined(NICKEL_ONLY) || defined(LS_ONLY)
 static bool isproc(const char* proc) {
     char buf[PATH_MAX] = { 0 };
     ssize_t len;
@@ -35,6 +36,7 @@ static bool isproc(const char* proc) {
     }
     return false;
 }
+#endif
 
 constructor static void init() {
     #ifdef NICKEL_ONLY
