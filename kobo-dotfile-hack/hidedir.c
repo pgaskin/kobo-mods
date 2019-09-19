@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <syslog.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 
@@ -108,7 +109,11 @@ static bool should_hide(DIR *dir __attribute__((unused)), const char *name) {
         return false;
     if (strcasecmp(name, ".adobe-digital-editions") == 0) // show **/.adobe-digital-editions
         return false;
-    return name[0] == '.'; // hide **/.* (but not everything underneath)
+    if (name[0] != '.')
+        return false;
+    // hide **/.* (but not everything underneath)
+    syslog(LOG_DEBUG, "(kobo-dotfile-hack) Hid `%s` from nickel!", name);
+    return true;
 }
 
 #else
@@ -126,7 +131,11 @@ static bool should_hide(DIR *dir, const char *name) {
         return false;
     if (strcasecmp(name, ".adobe-digital-editions") == 0 || strcasestr(path, "/.adobe-digital-editions")) // show **/.adobe-digital-editions/**
         return false;
-    return name[0] == '.'; // hide **/.* (but not everything underneath)
+    if (name[0] != '.')
+        return false;
+    // hide **/.* (but not everything underneath)
+    syslog(LOG_DEBUG, "(kobo-dotfile-hack) Hid `%s/%s` from nickel!", path, name);
+    return true;
 }
 
 DIR *opendir(const char *name) {
@@ -157,4 +166,5 @@ int closedir(DIR* dir) {
     }
     return closedir_orig(dir);
 }
+
 #endif
