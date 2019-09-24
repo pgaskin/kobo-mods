@@ -28,22 +28,26 @@ static typeof(closedir)  *closedir_orig;
 static char *dirpaths[65535];
 #endif
 
-#if defined(NICKEL_ONLY) || defined(LS_ONLY)
+#ifdef NICKEL_ONLY
+#define CHECKPROC "nickel"
+#else
+#ifdef LS_ONLY
+#define CHECKPROC "ls"
+#endif
+#endif
+
+#ifdef CHECKPROC
 static bool isproc(const char* proc) {
     char buf[PATH_MAX] = { 0 };
-    ssize_t len;
-    if ((len = readlink("/proc/self/exe", buf, PATH_MAX)) != -1) {
+    if (readlink("/proc/self/exe", buf, PATH_MAX) != -1)
         return strcmp(strrchr(buf, '/')+1, proc) == 0;
-    }
     return false;
 }
 #endif
 
 constructor static void init() {
-    #ifdef NICKEL_ONLY
-    wrap = isproc("nickel");
-    #elif LS_ONLY
-    wrap = isproc("ls");
+    #ifdef CHECKPROC
+    wrap = isproc(CHECKPROC);
     #endif
 
     readdir_orig     = dlsym(RTLD_NEXT, "readdir");
@@ -112,7 +116,11 @@ static bool should_hide(DIR *dir __attribute__((unused)), const char *name) {
     if (name[0] != '.')
         return false;
     // hide **/.* (but not everything underneath)
-    syslog(LOG_DEBUG, "(kobo-dotfile-hack) Hid `%s` from nickel!", name);
+    #ifdef CHECKPROC
+    syslog(LOG_DEBUG, "(kobo-dotfile-hack) Hid `%s` from " CHECKPROC "!", name);
+    #else
+    syslog(LOG_DEBUG, "(kobo-dotfile-hack) Hid `%s`!", name);
+    #endif
     return true;
 }
 
@@ -134,7 +142,11 @@ static bool should_hide(DIR *dir, const char *name) {
     if (name[0] != '.')
         return false;
     // hide **/.* (but not everything underneath)
-    syslog(LOG_DEBUG, "(kobo-dotfile-hack) Hid `%s/%s` from nickel!", path, name);
+    #ifdef CHECKPROC
+    syslog(LOG_DEBUG, "(kobo-dotfile-hack) Hid `%s/%s` from " CHECKPROC "!", path, name);
+    #else
+    syslog(LOG_DEBUG, "(kobo-dotfile-hack) Hid `%s`!", name);
+    #endif
     return true;
 }
 
