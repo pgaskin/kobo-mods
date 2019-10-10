@@ -12,6 +12,8 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
+extern char* program_invocation_short_name; // GNU extension!
+
 #define constructor __attribute__((constructor))
 
 static bool wrap = true;
@@ -38,10 +40,7 @@ static char *dirpaths[65535];
 
 #ifdef CHECKPROC
 static bool isproc(const char* proc) {
-    char buf[PATH_MAX] = { 0 };
-    if (readlink("/proc/self/exe", buf, PATH_MAX) != -1)
-        return strcmp(strrchr(buf, '/')+1, proc) == 0;
-    return false;
+    return strcmp(program_invocation_short_name, proc) == 0;
 }
 #endif
 
