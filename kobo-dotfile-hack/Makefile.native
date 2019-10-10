@@ -1,7 +1,7 @@
 CC       = $(CROSS_PREFIX)gcc
 CONFIG   = -DLS_ONLY
 
-override CFLAGS := -Wall -shared -ldl -std=gnu99 -fPIC $(CONFIG) $(CFLAGS)
+override CFLAGS := -Wall -Wno-deprecated-declarations -shared -ldl -std=gnu99 -fPIC $(CONFIG) $(CFLAGS)
 
 .PHONY: all clean test
 
