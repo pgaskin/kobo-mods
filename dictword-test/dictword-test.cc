@@ -83,7 +83,7 @@ extern "C" void* _ZN16DictionaryParser7getHtmlERK7QString(void* _this, QString c
 
 // interp sets the interpreter path so this can be called as a executable as
 // well as loaded as a library.
-__attribute__ ((unused)) static const char interp[] __attribute__((section(".interp"))) = "/lib/ld-linux.so.3";
+__attribute__((unused)) static const char interp[] __attribute__((section(".interp"))) = "/lib/ld-linux.so.3"; // arm-linux-gnueabihf
 
 // allow accessing the args from another func.
 int _dwt_argc = 0;
@@ -100,7 +100,7 @@ static int _dwt_init(int iargc, char** iargv, char** ienv) {
 }
 
 // init is called when the binary is loaded.
-__attribute__ ((unused)) static void* init __attribute__((section(".init_array"))) = (void*) &_dwt_init;
+__attribute__((unused)) static void* init __attribute__((section(".init_array"))) = (void*) &_dwt_init;
 
 // _main_shim is used as the entry point when running as an application.
 extern "C" void _dwt_main_shim() {

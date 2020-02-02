@@ -37,12 +37,10 @@ CFLAGS_BIN ?= -pie
 CFLAGS_LIB ?= -fPIC -shared
 override CFLAGS := $(CFLAGS) $(QT5CORE_CFLAGS) $(QT5WIDGETS_CFLAGS) $(CFLAGS_BIN) $(CFLAGS_LIB)
 
-LDFLAGS     ?= -Wl,-rpath,/usr/local/Kobo -Wl,-rpath,/usr/local/Qt-5.2.1-arm/lib -ldl
+LDFLAGS     ?= -Wl,-rpath,/usr/local/Kobo -Wl,-rpath,/usr/local/Qt-5.2.1-arm/lib -ldl -s
 LDFLAGS_BIN ?= -Wl,-e,_dwt_main_shim
 LDFLAGS_LIB ?= -Wl,-soname,libdictword-test.so
 override LDFLAGS := $(LDFLAGS) $(QT5CORE_LIBS) $(QT5WIDGETS_LIBS) $(LDFLAGS_BIN) $(LDFLAGS_LIB)
-
-# the actual build stuff
 
 all: dictword-test.so
 

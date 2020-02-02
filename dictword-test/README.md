@@ -1,6 +1,8 @@
 # dictword-test
 This tool gets the prefix used for word lookup in the dictionary directly from libnickel. It works without any patches or conflicts by using a lot of LD_PRELOAD and dynamic linker hacks.
 
+Japanese (Kanji) is not supported (it uses a different function, and is only called on the Japanese dictionaries anyways).
+
 This was last tested on 4.19.14123, but it should continue to work for the forseeable future.
 
 Theoretically, it should be possible to run this on a non-kobo ARM device (i.e. in QEMU), but this hasn't been tested. The biggest possible issue with doing this would be the reads to `/dev/ntx_io` and `/sys/class/power_supply/mc13892_bat/status`, but it should work fine without those (and it can be patched out if needed).
