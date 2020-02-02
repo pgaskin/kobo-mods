@@ -43,6 +43,12 @@ static void* htmlForWord(QString const& word) {
 
 // _dwt_main is called by the shim.
 static int _dwt_main(int argc, char** argv) {
+    // we exit using _Exit, so output doesn't get flushed automatically, and
+    // causes printfs to be lost when piping (printf won't flush on newlines
+    // when piped), so we'll just disable it entirely.
+    setbuf(stdout, NULL);
+    setbuf(stderr, NULL);
+
     fprintf(stderr, "Initializing QCoreApplication\n");
     QScopedPointer<QCoreApplication> app(new QCoreApplication(argc, argv));
 
