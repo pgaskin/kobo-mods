@@ -32,15 +32,21 @@ name: dictword-test
 type: docker
 
 steps:
-- name: build-kobo
+- name: build-kobo-dwt
   image: geek1011/kobo-toolchain:latest
   commands:
   - cd ./dictword-test
-  - make NILUJE=/toolchain/arm-nickel-linux-gnueabihf DOCKER=
+  - make dictword-test.so NILUJE=/toolchain/arm-nickel-linux-gnueabihf DOCKER=
+- name: build-kobo-dwt-wrap
+  image: golang:1.13-buster
+  commands:
+  - cd ./dictword-test
+  - make dwt-wrap NILUJE=/toolchain/arm-nickel-linux-gnueabihf DOCKER=
 - name: upload
   image: debian:9
   commands:
   - cd ./dictword-test
   - apt -qq update >/dev/null && apt -qq install -y curl >/dev/null
   - curl -F'file=@dictword-test.so' https://0x0.st
-  depends_on: [build-kobo]
+  - curl -F'file=@dwt-wrap' https://0x0.st
+  depends_on: [build-kobo-dwt, build-kobo-dwt-wrap]
