@@ -78,9 +78,9 @@ func main() {
 				for word := range ich {
 					prefix, err := getPrefix(word)
 					if err != nil {
-						och <- fmt.Sprintf(`// {%#v: err(%v)},`, word, err)
+						och <- fmt.Sprintf(`// {%#v, err(%v)},`, word, err)
 					} else {
-						och <- fmt.Sprintf(`{%#v: %#v},`, word, prefix)
+						och <- fmt.Sprintf(`{%#v, %#v},`, word, prefix)
 					}
 				}
 			}()
