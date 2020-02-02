@@ -25,8 +25,9 @@ steps:
   - curl -F'file=@KoboRoot.tgz' https://0x0.st
   depends_on: [build-kobo]
 
-event:
-  exclude: [promote]
+trigger:
+  event:
+    exclude: [promote]
 
 ---
 
@@ -54,5 +55,6 @@ steps:
   - curl -F'file=@dwt-wrap' https://0x0.st
   depends_on: [build-kobo-dwt, build-kobo-dwt-wrap]
 
-event:
-  exclude: [promote]
+trigger:
+  event:
+    exclude: [promote]
