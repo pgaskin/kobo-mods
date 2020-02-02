@@ -1,5 +1,6 @@
 kind: pipeline
 name: kobo-dotfile-hack
+type: docker
 
 steps:
 - name: build-native
@@ -22,4 +23,24 @@ steps:
   - cd ./kobo-dotfile-hack
   - apt -qq update >/dev/null && apt -qq install -y curl >/dev/null
   - curl -F'file=@KoboRoot.tgz' https://0x0.st
+  depends_on: [build-kobo]
+
+---
+
+kind: pipeline
+name: dictword-test
+type: docker
+
+steps:
+- name: build-kobo
+  image: geek1011/kobo-toolchain:latest
+  commands:
+  - cd ./dictword-test
+  - make NILUJE=/toolchain/arm-nickel-linux-gnueabihf DOCKER=
+- name: upload
+  image: debian:9
+  commands:
+  - cd ./dictword-test
+  - apt -qq update >/dev/null && apt -qq install -y curl >/dev/null
+  - curl -F'file=@dictword-test.so' https://0x0.st
   depends_on: [build-kobo]
