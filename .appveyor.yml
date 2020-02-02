@@ -1,0 +1,18 @@
+image: ubuntu
+
+version: '{build}'
+
+install:
+- docker pull geek1011/kobo-toolchain:latest
+- docker pull golang:1.13-buster
+
+build_script:
+- sh: cd kobo-dotfile-hack && docker run --rm --volume="$PWD:/src" --workdir=/src --entrypoint=make geek1011/kobo-toolchain:latest CROSS_PREFIX=arm-nickel-linux-gnueabihf- && cd ..
+- sh: cd dictword-test && make NILUJE=/toolchain/arm-nickel-linux-gnueabihf DOCKER=docker && cd ..
+
+test: off
+
+artifacts:
+- path: kobo-dotfile-hack/KoboRoot.tgz
+- path: dictword-test/dictword-test.so
+- path: dictword-test/dwt-wrap

@@ -18,7 +18,7 @@ QT5WIDGETS_LIBS   ?= -L$(NILUJE)/$(HOST)/sysroot/lib -lQt5Widgets
 
 ifdef DOCKER
 DOCKER_IMAGE ?= geek1011/kobo-toolchain:latest
-override CXX := $(DOCKER) run --volume=.:/src --workdir=/src --rm -it --entrypoint=$(CXX) $(DOCKER_IMAGE)
+override CXX := $(DOCKER) run --volume="$(dir $(realpath $(firstword $(MAKEFILE_LIST)))):/src" --workdir=/src --rm --entrypoint=$(CXX) $(DOCKER_IMAGE)
 endif
 
 override CXX := $(CXX) -I$(NILUJE)/$(HOST)/sysroot/include -L$(NILUJE)/$(HOST)/sysroot/lib
@@ -65,7 +65,7 @@ GOLDFLAGS ?= -s -w
 
 ifdef DOCKER
 DOCKER_IMAGE_GO ?= golang:1.13-buster
-override GO := $(DOCKER) run --volume=.:/src --workdir=/src --rm -it --env=CGO_ENABLED--env=GOOS --env=GOARCH --env=GOARM --entrypoint=$(GO) $(DOCKER_IMAGE_GO)
+override GO := $(DOCKER) run --volume="$(dir $(realpath $(firstword $(MAKEFILE_LIST)))):/src" --workdir=/src --rm --env=CGO_ENABLED--env=GOOS --env=GOARCH --env=GOARM --entrypoint=$(GO) $(DOCKER_IMAGE_GO)
 endif
 
 dwt-wrap: dwt-wrap.go
