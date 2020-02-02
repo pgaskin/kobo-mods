@@ -26,11 +26,11 @@ endif
 
 ifndef NILUJE
 CXX                = $(CROSS_PREFIX)g++
-PKGCONFIG          = $(CROSS_PREFIX)pkg-config
-QT5CORE_CFLAGS    ?= $(shell $(PKGCONFIG) --cflags Qt5Core)
-QT5CORE_LIBS      ?= $(shell $(PKGCONFIG) --libs   Qt5Core)
-QT5WIDGETS_CFLAGS ?= $(shell $(PKGCONFIG) --cflags Qt5Widgets)
-QT5WIDGETS_LIBS   ?= $(shell $(PKGCONFIG) --libs   Qt5Widgets)
+PKG_CONFIG         = $(CROSS_PREFIX)pkg-config
+QT5CORE_CFLAGS    ?= $(shell $(PKG_CONFIG) --cflags Qt5Core)
+QT5CORE_LIBS      ?= $(shell $(PKG_CONFIG) --libs   Qt5Core)
+QT5WIDGETS_CFLAGS ?= $(shell $(PKG_CONFIG) --cflags Qt5Widgets)
+QT5WIDGETS_LIBS   ?= $(shell $(PKG_CONFIG) --libs   Qt5Widgets)
 endif
 
 # Note: this builds a executable library:
@@ -42,10 +42,10 @@ endif
 # Note: the order matters; it will error with "undefined reference to `main'" if
 # -shared is before -pie.
 
-CFLAGS     ?= -Wall -Wno-unknown-pragmas
+CFLAGS     ?= -march=armv7-a -mtune=cortex-a8 -mfpu=neon -mfloat-abi=hard -mthumb
 CFLAGS_BIN ?= -pie
 CFLAGS_LIB ?= -fPIC -shared
-override CFLAGS := $(CFLAGS) $(QT5CORE_CFLAGS) $(QT5WIDGETS_CFLAGS) $(CFLAGS_BIN) $(CFLAGS_LIB)
+override CFLAGS := $(CFLAGS) $(QT5CORE_CFLAGS) $(QT5WIDGETS_CFLAGS) $(CFLAGS_BIN) $(CFLAGS_LIB) -Wall -Wno-unknown-pragmas
 
 LDFLAGS     ?= -Wl,-rpath,/usr/local/Kobo -Wl,-rpath,/usr/local/Qt-5.2.1-arm/lib -ldl -s
 LDFLAGS_BIN ?= -Wl,-e,_dwt_main_shim
@@ -61,14 +61,15 @@ GO         = go
 GOOS      ?= linux
 GOARCH    ?= arm
 GOARM     ?= 5
+GOFLAGS   ?= -trimpath
 GOLDFLAGS ?= -s -w
 
 ifdef DOCKER
 DOCKER_IMAGE_GO ?= golang:1.13-buster
-override GO := $(DOCKER) run --volume="$(dir $(realpath $(firstword $(MAKEFILE_LIST)))):/src" --workdir=/src --rm --env=CGO_ENABLED--env=GOOS --env=GOARCH --env=GOARM --entrypoint=$(GO) $(DOCKER_IMAGE_GO)
+override GO := $(DOCKER) run --volume="$(dir $(realpath $(firstword $(MAKEFILE_LIST)))):/src" --workdir=/src --rm --env=CGO_ENABLED --env=GOOS --env=GOARCH --env=GOARM --entrypoint=$(GO) $(DOCKER_IMAGE_GO)
 endif
 
 dwt-wrap: dwt-wrap.go
 	CGO_ENABLED=0 GOOS=$(GOOS) GOARCH=$(GOARCH) GOARM=$(GOARM) $(GO) env
-	CGO_ENABLED=0 GOOS=$(GOOS) GOARCH=$(GOARCH) GOARM=$(GOARM) $(GO) build -ldflags "$(GOLDFLAGS)" -o "$@" "$^"
+	CGO_ENABLED=0 GOOS=$(GOOS) GOARCH=$(GOARCH) GOARM=$(GOARM) $(GO) build -ldflags "$(GOLDFLAGS)" $(GOFLAGS) -o "$@" "$^"
 
