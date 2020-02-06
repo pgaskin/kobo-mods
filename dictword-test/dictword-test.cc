@@ -2,44 +2,40 @@
 #include <QDebug>
 #include <QString>
 
+#include <stdexcept>
+#include <string>
+
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
 #include <dlfcn.h>
 
+#pragma region "Shared Code"
+
+// this is an ugly hack, but not as ugly as the previous method with prematurely
+// exiting before a segfault happens...
+class HtmlCallback : public std::runtime_error {
+public:
+    HtmlCallback(QString path) : std::runtime_error("got html path") {
+        this->_path = path;
+    }
+    ~HtmlCallback() throw() {};
+    QString path() const {
+        return this->_path;
+    };
+    QString prefix() const {
+        if (!this->_path.startsWith("/mnt/onboard/.kobo/dict/dicthtml.zip/"))
+            throw std::runtime_error("unexpected format for returned path: doesn't start with /mnt/onboard/.kobo/dict/dicthtml.zip/");
+        if (!this->_path.endsWith(".html"))
+            throw std::runtime_error("unexpected format for returned path: doesn't end with .html");
+        return this->_path.section("/mnt/onboard/.kobo/dict/dicthtml.zip/", -1).section(".html", 0, -2); // everything after /.../, before .html
+    }
+private:
+    QString _path;
+};
+
+#pragma endregion
 #pragma region "Application"
-
-// htmlForWord is a dlsym wrapper for DictionaryParser11htmlForWord(QString
-// const& word).
-//
-// Note that this function doesn't need the this pointer to be set until after
-// the first call to DictionaryParser::getHtml, hence why this works.
-//
-// A QCoreApplication (or subclass) must be initialized before calling this
-// function. It will not be used for anything, but it is needed by libnickel.
-static void* htmlForWord(QString const& word) {
-    typedef void* DictionaryParser;
-    typedef void* (*htmlForWord_t)(DictionaryParser, QString const&);
-
-    fprintf(stderr, "Loading libnickel\n");
-    void* libnickel = dlopen("/usr/local/Kobo/libnickel.so.1.0.0", RTLD_LAZY);
-    if (!libnickel) {
-        fprintf(stderr, "Error loading libnickel: %s\n", dlerror());
-        _Exit(1);
-        __builtin_unreachable();
-    }
-
-    fprintf(stderr, "Loading DictionaryParser::htmlForWord\n");
-    htmlForWord_t fn = (htmlForWord_t) dlsym(libnickel, "_ZN16DictionaryParser11htmlForWordERK7QString");
-    if (!fn) {
-        fprintf(stderr, "Error loading DictionaryParser::htmlForWord: %s\n", dlerror());
-        _Exit(1);
-        __builtin_unreachable();
-    }
-
-    fprintf(stderr, "Calling DictionaryParser::htmlForWord\n");
-    return fn(NULL, word);
-}
 
 // _dwt_main is called by the shim.
 static int _dwt_main(int argc, char** argv) {
@@ -49,18 +45,55 @@ static int _dwt_main(int argc, char** argv) {
     setbuf(stdout, NULL);
     setbuf(stderr, NULL);
 
-    fprintf(stderr, "Initializing QCoreApplication\n");
-    QScopedPointer<QCoreApplication> app(new QCoreApplication(argc, argv));
-
-    if (argc != 2) {
-        fprintf(stderr, "Usage: LD_PRELOAD=%s %s <word_utf8>\n", argv[0], argv[0]);
+    if (argc < 2) {
+        fprintf(stderr, "Usage: LD_PRELOAD=%s %s word_utf8...\n", argv[0], argv[0]);
         return 2;
     }
 
-    QString word = QString::fromUtf8(argv[1]);
-    htmlForWord(word);
+    fprintf(stderr, "Initializing QCoreApplication\n");
+    QScopedPointer<QCoreApplication> app(new QCoreApplication(argc, argv)); // required for libnickel
 
-    __builtin_unreachable(); // the getHtml wrapper should exit
+    typedef void* DictionaryParser;
+    typedef void* (*htmlForWord_t)(DictionaryParser, QString const&);
+
+    fprintf(stderr, "Loading libnickel\n");
+    void* libnickel = dlopen("/usr/local/Kobo/libnickel.so.1.0.0", RTLD_LAZY);
+    if (!libnickel) {
+        fprintf(stderr, "Error: dlopen libnickel: %s\n", dlerror());
+        return 1;
+    }
+
+    fprintf(stderr, "Loading DictionaryParser::htmlForWord\n");
+    htmlForWord_t htmlForWord = (htmlForWord_t) dlsym(libnickel, "_ZN16DictionaryParser11htmlForWordERK7QString");
+    if (!htmlForWord) {
+        fprintf(stderr, "Error: dlsym _ZN16DictionaryParser11htmlForWordERK7QString: %s\n", dlerror());
+        return 1;
+    }
+
+    // TODO: reimplement stdin reading, clean up code
+
+    while (--argc) {
+        char *word = *(++argv);
+        try {
+            QString qword = QString::fromUtf8(word);
+            if (qword.isEmpty())
+                throw std::runtime_error("empty string not supported"); // libnickel doesn't support this
+
+            fprintf(stderr, "Calling DictionaryParser::htmlForWord\n");
+            try {
+                // the this pointer isn't used until after getHtml is called and
+                // triggers the callback, which is why this works
+                htmlForWord(NULL, qword);
+                throw std::runtime_error("callback wasn't called...");
+            } catch (HtmlCallback const& cb) {
+                printf("{\"%s\", \"%s\"},\n", word, qPrintable(cb.prefix()));
+            }
+        } catch (std::exception const& ex) {
+            printf("// {\"%s\", err(%s)},\n", word, ex.what());
+        }
+    }
+
+    return 0;
 }
 
 #pragma endregion
@@ -72,16 +105,11 @@ static int _dwt_main(int argc, char** argv) {
 //
 // Note that the this pointer isn't used between DictionaryParser::htmlForWord
 // and the beginning of DictionaryParser::getHtml, hence why this whole thing
-// works and why we exit here (we could also patch DictionaryParser::getHtml
-// to return after calling this so we can process more than one word at a time,
-// but it means this trick won't safely work standalone without interfering with
-// nickel).
+// works and why throw an exception here (the stack will still get unwound
+// properly, which is a nice bonus of using this method).
 extern "C" void* _ZN16DictionaryParser7getHtmlERK7QString(void* _this, QString const& path) {
     fprintf(stderr, "Intercepting getHtml\n");
-
-    printf("%s\n", qPrintable(path));
-    _Exit(0); // exit to prevent finishing the rest of htmlForWord and segfaulting
-    __builtin_unreachable();
+    throw HtmlCallback(path);
 }
 
 #pragma endregion

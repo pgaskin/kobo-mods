@@ -1,12 +1,9 @@
-all: dictword-test.so dwt-wrap
+all: dictword-test.so
 
 clean:
 	rm -f dictword-test.so*
-	rm -f dwt-wrap
 
 .PHONY: all clean
-
-# dictword-test.so
 
 ifdef NILUJE
 HOST               = arm-nickel-linux-gnueabihf
@@ -54,22 +51,3 @@ override LDFLAGS := $(LDFLAGS) $(QT5CORE_LIBS) $(QT5WIDGETS_LIBS) $(LDFLAGS_BIN)
 
 dictword-test.so: dictword-test.cc
 	$(CXX) $(CFLAGS) "$^" -o "$@" $(LDFLAGS)
-
-# dwt-wrap
-
-GO         = go
-GOOS      ?= linux
-GOARCH    ?= arm
-GOARM     ?= 5
-GOFLAGS   ?= -trimpath
-GOLDFLAGS ?= -s -w
-
-ifdef DOCKER
-DOCKER_IMAGE_GO ?= golang:1.13-buster
-override GO := $(DOCKER) run --volume="$(dir $(realpath $(firstword $(MAKEFILE_LIST)))):/src" --workdir=/src --rm --env=CGO_ENABLED --env=GOOS --env=GOARCH --env=GOARM --entrypoint=$(GO) $(DOCKER_IMAGE_GO)
-endif
-
-dwt-wrap: dwt-wrap.go
-	CGO_ENABLED=0 GOOS=$(GOOS) GOARCH=$(GOARCH) GOARM=$(GOARM) $(GO) env
-	CGO_ENABLED=0 GOOS=$(GOOS) GOARCH=$(GOARCH) GOARM=$(GOARM) $(GO) build -ldflags "$(GOLDFLAGS)" $(GOFLAGS) -o "$@" "$^"
-

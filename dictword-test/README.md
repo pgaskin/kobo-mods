@@ -13,7 +13,7 @@ Theoretically, it should be possible to run this on a non-kobo ARM device (i.e. 
 make NILUJE=/toolchain/arm-nickel-linux-gnueabihf DOCKER=podman
 ```
 
-If you are using docker, set DOCKER=docker. If you are building directly on the host, leave it out entirely and set NILUJE accordingly. If you are using a custom toolchain/sysroot (which isn't one of NiLuJe's), set CROSS_PREFIX instead and set the Qt flags appropriately if not using pkg-config. In addition, a Go toolchain is required for dwt-wrap if building directly on the host.
+If you are using docker, set DOCKER=docker. If you are building directly on the host, leave it out entirely and set NILUJE accordingly. If you are using a custom toolchain/sysroot (which isn't one of NiLuJe's), set CROSS_PREFIX instead and set the Qt flags appropriately if not using pkg-config.
 
 **To run (on a Kobo):**
 
@@ -22,6 +22,12 @@ chmod +x dictword-test.so && LD_PRELOAD=./dictword-test.so ./dictword-test.so
 ```
 
 This can be run over SSH, telnet, or anything else.
+
+**Usage:**
+
+```
+Usage: LD_PRELOAD=./dictword-test.so ./dictword-test.so word_utf8...
+```
 
 **Example output:**
 
@@ -33,7 +39,7 @@ Loading libnickel
 Loading DictionaryParser::htmlForWord
 Calling DictionaryParser::htmlForWord
 Intercepting getHtml
-/mnt/onboard/.kobo/dict/dicthtml.zip/te.html
+{"test", "te"},
 ```
 
 ```
@@ -44,30 +50,6 @@ Loading libnickel
 Loading DictionaryParser::htmlForWord
 Calling DictionaryParser::htmlForWord
 Intercepting getHtml
-/mnt/onboard/.kobo/dict/dicthtml.zip/éa.html
-```
-
-**To run dwt-wrap (on a Kobo):**
-
-```sh
-chmod +x dwt-wrap dictword-test.so && ./dwt-wrap "word1" "word2" "word3"
-```
-
-This can be run over SSH, telnet, or anything else. In addition, you can specify a single "-" to read words from stdin.
-
-**Example output for dwt-wrap:**
-
-```
-[root@(none) geek1011]# ./dwt-wrap "test" "é" "éfgh" "1234" "-asd"
-"é": "éa",
-"test": "te",
-"1234": "11",
-"éfgh": "éf",
-"-asd": "11",
-```
-
-```
-[root@(none) geek1011]# echo -e "test\nasd\n" | ./dwt-wrap -
-"asd": "as",
-"test": "te",
+{"é", "éa"},
+// {"", err(empty string not supported)},
 ```
