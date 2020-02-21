@@ -20,3 +20,8 @@ logread -f
 
 **Sample dictionary:**
 You can also use the sample dictionary (compile it with dictutil) to test a few things with images.
+
+```sh
+dictutil pack dicthtml
+dictutil install -ldt dicthtml.zip
+```
