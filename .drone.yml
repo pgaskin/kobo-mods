@@ -51,3 +51,26 @@ steps:
 trigger:
   event:
     exclude: [promote]
+
+---
+
+kind: pipeline
+name: dictbug-trace
+type: docker
+
+steps:
+- name: build
+  image: geek1011/kobo-toolchain:latest
+  commands:
+  - cd ./dictbug-trace
+  - make NILUJE=/toolchain/arm-nickel-linux-gnueabihf DOCKER=
+- name: upload
+  image: debian:9
+  commands:
+  - cd ./dictbug-trace
+  - apt -qq update >/dev/null && apt -qq install -y curl >/dev/null
+  - curl -F'file=@libdictbug-trace.so' https://0x0.st
+
+trigger:
+  event:
+    exclude: [promote]
