@@ -17,3 +17,6 @@ echo " /usr/local/geek1011/libdictbug-trace.so" >> /etc/ld.so.preload
 reboot
 logread -f
 ```
+
+**Sample dictionary:**
+You can also use the sample dictionary (compile it with dictutil) to test a few things with images.
