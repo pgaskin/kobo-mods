@@ -1,9 +1,11 @@
 #include <QApplication>
 #include <QDebug>
+#include <QNetworkAccessManager>
+#include <QNetworkReply>
+#include <QNetworkRequest>
 #include <QString>
 #include <QUrl>
 
-#include <stdexcept>
 #include <string>
 
 #include <cstdio>
@@ -17,13 +19,20 @@
 #define constructor __attribute__((constructor))
 
 static void(*DictionaryWebview_setHtml_orig)(void*, QString const&, QUrl const&);
+static QNetworkReply*(*QNetworkAccessManager_get_orig)(void*, QNetworkRequest const&);
 
 constructor static void init() {
     SYM(DictionaryWebview_setHtml_orig, "_ZN17DictionaryWebview7setHtmlERK7QStringRK4QUrl");
+    SYM(QNetworkAccessManager_get_orig, "_ZN21QNetworkAccessManager3getERK15QNetworkRequest");
 }
 
 extern "C" void _ZN17DictionaryWebview7setHtmlERK7QStringRK4QUrl(void* _this, QString const& path, QUrl const& url) {
-    LOG("DictionaryWebview::setHtml(%s, %s)", qPrintable(path), qPrintable(url.toString(QUrl::None)));
+    LOG("DictionaryWebview::setHtml(`%s`,`%s`)", qPrintable(path), qPrintable(url.toString(QUrl::None)));
     DictionaryWebview_setHtml_orig(_this, path, url);
     return;
+}
+
+extern "C" QNetworkReply* _ZN21QNetworkAccessManager3getERK15QNetworkRequest(void* _this, QNetworkRequest const& request) {
+    LOG("QNetworkAccessManager::get(QNetworkRequest.url:`%s`)", qPrintable(request.url().toString(QUrl::None)));
+    return QNetworkAccessManager_get_orig(_this, request);
 }

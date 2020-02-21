@@ -12,6 +12,8 @@ QT5CORE_CFLAGS    ?= -I$(NILUJE)/$(HOST)/sysroot/include/QtCore
 QT5CORE_LIBS      ?= -L$(NILUJE)/$(HOST)/sysroot/lib -lQt5Core
 QT5WIDGETS_CFLAGS ?= -I$(NILUJE)/$(HOST)/sysroot/include/QtWidgets
 QT5WIDGETS_LIBS   ?= -L$(NILUJE)/$(HOST)/sysroot/lib -lQt5Widgets
+QT5NETWORK_CFLAGS ?= -I$(NILUJE)/$(HOST)/sysroot/include/QtNetwork
+QT5NETWORK_LIBS   ?= -L$(NILUJE)/$(HOST)/sysroot/lib -lQt5Network
 
 ifdef DOCKER
 DOCKER_IMAGE ?= geek1011/kobo-toolchain:latest
@@ -28,13 +30,15 @@ QT5CORE_CFLAGS    ?= $(shell $(PKG_CONFIG) --cflags Qt5Core)
 QT5CORE_LIBS      ?= $(shell $(PKG_CONFIG) --libs   Qt5Core)
 QT5WIDGETS_CFLAGS ?= $(shell $(PKG_CONFIG) --cflags Qt5Widgets)
 QT5WIDGETS_LIBS   ?= $(shell $(PKG_CONFIG) --libs   Qt5Widgets)
+QT5NETWORK_CFLAGS ?= $(shell $(PKG_CONFIG) --cflags Qt5Network)
+QT5NETWORK_LIBS   ?= $(shell $(PKG_CONFIG) --libs   QtNetwork)
 endif
 
 CFLAGS     ?= -march=armv7-a -mtune=cortex-a8 -mfpu=neon -mfloat-abi=hard -mthumb -fPIC -shared
-override CFLAGS := $(CFLAGS) $(QT5CORE_CFLAGS) $(QT5WIDGETS_CFLAGS) -Wall -Wno-unknown-pragmas
+override CFLAGS := $(CFLAGS) $(QT5CORE_CFLAGS) $(QT5WIDGETS_CFLAGS) $(QT5NETWORK_CFLAGS) -Wall -Wno-unknown-pragmas
 
 LDFLAGS     ?= -Wl,-rpath,/usr/local/Kobo -Wl,-rpath,/usr/local/Qt-5.2.1-arm/lib -ldl -s -Wl,-soname,libdictbug-trace.so
-override LDFLAGS := $(LDFLAGS) $(QT5CORE_LIBS) $(QT5WIDGETS_LIBS)
+override LDFLAGS := $(LDFLAGS) $(QT5CORE_LIBS) $(QT5WIDGETS_LIBS) $(QT5NETWORK_LIBS)
 
 libdictbug-trace.so: dictbug-trace.cc
 	$(CXX) $(CFLAGS) "$^" -o "$@" $(LDFLAGS)

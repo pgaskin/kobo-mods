@@ -1,4 +1,5 @@
 # dictbug-trace
+DON'T USE THIS IF YOU DON'T NEED IT!
 
 **Build:**
 
