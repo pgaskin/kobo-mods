@@ -74,3 +74,27 @@ steps:
 trigger:
   event:
     exclude: [promote]
+
+---
+
+kind: pipeline
+name: kobopatch-livepatch
+type: docker
+
+steps:
+- name: build
+  image: golang:1.13-buster
+  commands:
+  - cd ./kobopatch-livepatch
+  - make DOCKER=
+- name: upload
+  image: debian:9
+  commands:
+  - cd ./kobopatch-livepatch
+  - apt -qq update >/dev/null && apt -qq install -y curl >/dev/null
+  - curl -F'file=@kplive' https://0x0.st
+  - curl -F'file=@kplived' https://0x0.st
+
+trigger:
+  event:
+    exclude: [promote]

@@ -10,6 +10,7 @@ build_script:
 - sh: cd kobo-dotfile-hack && docker run --rm --volume="$PWD:/src" --workdir=/src --entrypoint=make geek1011/kobo-toolchain:latest CROSS_PREFIX=arm-nickel-linux-gnueabihf- && cd ..
 - sh: cd dictword-test && make NILUJE=/toolchain/arm-nickel-linux-gnueabihf DOCKER=docker && cd ..
 - sh: cd dictbug-trace && make NILUJE=/toolchain/arm-nickel-linux-gnueabihf DOCKER=docker && cd ..
+- sh: cd kobopatch-livepatch && make DOCKER=docker all kplive-cross && cd ..
 
 test: off
 
@@ -18,3 +19,7 @@ artifacts:
 - path: dictword-test/dictword-test.so
 - path: dictword-test/dwt-wrap
 - path: dictbug-trace/libdictbug-trace.so
+- path: kobopatch-livepatch/kplived
+- path: kobopatch-livepatch/kplive-windows.exe
+- path: kobopatch-livepatch/kplive-linux-64bit
+- path: kobopatch-livepatch/kplive-darwin-64bit
