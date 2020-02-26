@@ -139,11 +139,15 @@ func main() {
 	pt := patchlib.NewPatcher(buf)
 	pt.Hook(func(offset int32, find, replace []byte) error {
 		fmt.Printf(": @0x%08x %X => %X\n", offset, find, replace)
-		ops = append(ops, struct {
+		op := struct {
 			Offset  int64
 			Find    []byte
 			Replace []byte
-		}{int64(offset), find, replace})
+		}{int64(offset), find, replace}
+		if len(op.Replace) < len(op.Find) {
+			op.Find = op.Find[:len(op.Replace)] // this happens for zlib patches
+		}
+		ops = append(ops, op)
 		return nil
 	})
 	if err := ps.ApplyTo(pt); err != nil {
