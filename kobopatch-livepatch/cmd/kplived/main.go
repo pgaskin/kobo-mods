@@ -198,7 +198,6 @@ func apply(filename string, ops ...*PatchOp) resp {
 			return resp{
 				Status: http.StatusInternalServerError,
 				Data:   fmt.Sprintf("check op %#v: read current memory: %v (nickel is now in an unpatched state)", op, err),
-				After:  reboot,
 			}
 		}
 		if !bytes.Equal(actual, op.Find) {
@@ -206,7 +205,6 @@ func apply(filename string, ops ...*PatchOp) resp {
 			return resp{
 				Status: http.StatusInternalServerError,
 				Data:   fmt.Sprintf("check op %#v: mismatch with expected state: expected %X, got %X (nickel is now in an unpatched state)", op, op.Replace, actual),
-				After:  reboot,
 			}
 		}
 	}
