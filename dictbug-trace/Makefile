@@ -12,7 +12,7 @@ QT5CORE_CFLAGS    ?= -I$(NILUJE)/$(HOST)/sysroot/include/QtCore
 QT5CORE_LIBS      ?= -L$(NILUJE)/$(HOST)/sysroot/lib -lQt5Core
 QT5WIDGETS_CFLAGS ?= -I$(NILUJE)/$(HOST)/sysroot/include/QtWidgets
 QT5WIDGETS_LIBS   ?= -L$(NILUJE)/$(HOST)/sysroot/lib -lQt5Widgets
-QT5NETWORK_CFLAGS ?= -I$(NILUJE)/$(HOST)/sysroot/include/QtNetwork
+QT5NETWORK_CFLAGS ?= -I$(NILUJE)/$(HOST)/sysroot/include/Qt5Network
 QT5NETWORK_LIBS   ?= -L$(NILUJE)/$(HOST)/sysroot/lib -lQt5Network
 
 ifdef DOCKER
@@ -31,7 +31,7 @@ QT5CORE_LIBS      ?= $(shell $(PKG_CONFIG) --libs   Qt5Core)
 QT5WIDGETS_CFLAGS ?= $(shell $(PKG_CONFIG) --cflags Qt5Widgets)
 QT5WIDGETS_LIBS   ?= $(shell $(PKG_CONFIG) --libs   Qt5Widgets)
 QT5NETWORK_CFLAGS ?= $(shell $(PKG_CONFIG) --cflags Qt5Network)
-QT5NETWORK_LIBS   ?= $(shell $(PKG_CONFIG) --libs   QtNetwork)
+QT5NETWORK_LIBS   ?= $(shell $(PKG_CONFIG) --libs   Qt5Network)
 endif
 
 CFLAGS     ?= -march=armv7-a -mtune=cortex-a8 -mfpu=neon -mfloat-abi=hard -mthumb -fPIC -shared
