@@ -60,10 +60,10 @@ type: docker
 
 steps:
 - name: build
-  image: geek1011/kobo-toolchain:latest
+  image: geek1011/nickeltc:1.0
   commands:
   - cd ./dictbug-trace
-  - make NILUJE=/toolchain/arm-nickel-linux-gnueabihf DOCKER=
+  - make
 - name: upload
   image: debian:9
   commands:

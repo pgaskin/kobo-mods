@@ -1,1 +1,3 @@
 libdictbug-trace.so
+ld.so.preload
+KoboRoot.tgz

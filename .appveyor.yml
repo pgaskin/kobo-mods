@@ -4,12 +4,13 @@ version: '{build}'
 
 install:
 - docker pull geek1011/kobo-toolchain:latest
+- docker pull geek1011/nickeltc:1.0
 - docker pull golang:1.13-buster
 
 build_script:
 - sh: cd kobo-dotfile-hack && docker run --rm --volume="$PWD:/src" --workdir=/src --entrypoint=make geek1011/kobo-toolchain:latest CROSS_PREFIX=arm-nickel-linux-gnueabihf- && cd ..
 - sh: cd dictword-test && make NILUJE=/toolchain/arm-nickel-linux-gnueabihf DOCKER=docker && cd ..
-- sh: cd dictbug-trace && make NILUJE=/toolchain/arm-nickel-linux-gnueabihf DOCKER=docker && cd ..
+- sh: cd dictbug-trace && docker run --rm --volume="$PWD:/src" --workdir=/src --entrypoint=make geek1011/nickeltc:1.0 && cd ..
 - sh: cd kobopatch-livepatch && make DOCKER=docker all kplive-cross && cd ..
 
 test: off
