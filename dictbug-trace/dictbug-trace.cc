@@ -1,5 +1,6 @@
 #include <QApplication>
 #include <QDebug>
+#include <QFileInfo>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QNetworkRequest>
@@ -21,11 +22,13 @@
 static void(*DictionaryWebview_setHtml_orig)(void*, QString const&, QUrl const&);
 static QNetworkReply*(*QNetworkAccessManager_get_orig)(void*, QNetworkRequest const&);
 static void*(*DictionaryParser_getFile_orig)(void*, void*, QString const&);
+static void*(*QFileInfo_QFileInfo_orig)(void*, QString const&);
 
 constructor static void init() {
     SYM(DictionaryWebview_setHtml_orig, "_ZN17DictionaryWebview7setHtmlERK7QStringRK4QUrl");
     SYM(QNetworkAccessManager_get_orig, "_ZN21QNetworkAccessManager3getERK15QNetworkRequest");
     SYM(DictionaryParser_getFile_orig, "_ZN16DictionaryParser7getFileEP7ZipFileRK7QString");
+    SYM(QFileInfo_QFileInfo_orig, "_ZN9QFileInfoC1ERK7QString");
 }
 
 extern "C" void _ZN17DictionaryWebview7setHtmlERK7QStringRK4QUrl(void* _this, QString const& path, QUrl const& url) {
@@ -42,4 +45,14 @@ extern "C" QNetworkReply* _ZN21QNetworkAccessManager3getERK15QNetworkRequest(voi
 extern "C" void* _ZN16DictionaryParser7getFileEP7ZipFileRK7QString(void* _this, void* zip, QString const& filename) {
     LOG("DictionaryParser::getFile(zip:*%p, `%s`)", zip, qPrintable(filename));
     return DictionaryParser_getFile_orig(_this, zip, filename);
+}
+
+extern "C" void* _ZN9QFileInfoC1ERK7QString(void* _this, QString const& filename) {
+    bool v = filename.contains("dict");
+    if (v)
+        LOG("QFileInfo::QFileInfo(%s)", qPrintable(filename));
+    void *res = QFileInfo_QFileInfo_orig(_this, filename);
+    if (v)
+        LOG("QFileInfo::size() = %lld", reinterpret_cast<QFileInfo*>(_this)->size());
+    return res;
 }
