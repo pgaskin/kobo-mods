@@ -32,7 +32,7 @@ Usage: LD_PRELOAD=./dictword-test.so ./dictword-test.so word_utf8...
 **Example output:**
 
 ```
-[root@(none) geek1011]# LD_PRELOAD=./dictword-test.so ./dictword-test.so "test"
+[root@(none) pgaskin]# LD_PRELOAD=./dictword-test.so ./dictword-test.so "test"
 Storing arguments
 Initializing QCoreApplication
 Loading libnickel
@@ -43,7 +43,7 @@ Intercepting getHtml
 ```
 
 ```
-[root@(none) geek1011]# LD_PRELOAD=./dictword-test.so ./dictword-test.so "é"
+[root@(none) pgaskin]# LD_PRELOAD=./dictword-test.so ./dictword-test.so "é"
 Storing arguments
 Initializing QCoreApplication
 Loading libnickel

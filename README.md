@@ -1,5 +1,5 @@
 # kobo-mods
-My Kobo mods which aren't [patches](https://github.com/geek1011/kobopatch-patches/releases/latest).
+My Kobo mods which aren't [patches](https://github.com/pgaskin/kobopatch-patches/releases/latest).
 
 Binaries for the latest commit can be downloaded [here](https://ci.appveyor.com/project/pgaskin/kobo-mods/build/artifacts).
 

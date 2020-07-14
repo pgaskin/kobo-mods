@@ -12,9 +12,9 @@ import (
 	"runtime/debug"
 	"strings"
 
-	"github.com/geek1011/kobopatch/patchfile"
-	_ "github.com/geek1011/kobopatch/patchfile/kobopatch"
-	"github.com/geek1011/kobopatch/patchlib"
+	"github.com/pgaskin/kobopatch/patchfile"
+	_ "github.com/pgaskin/kobopatch/patchfile/kobopatch"
+	"github.com/pgaskin/kobopatch/patchlib"
 	"github.com/spf13/pflag"
 )
 
@@ -26,7 +26,7 @@ func versionStr() string {
 	str := "kobopatch-livepatch " + version
 	if bi, ok := debug.ReadBuildInfo(); ok {
 		for _, d := range bi.Deps {
-			if d.Path == "github.com/geek1011/kobopatch" {
+			if d.Path == "github.com/pgaskin/kobopatch" {
 				str += " (kobopatch " + d.Version + ")"
 				break
 			}

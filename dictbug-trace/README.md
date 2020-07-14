@@ -12,8 +12,8 @@ If you are using docker, set DOCKER=docker. If you are building directly on the 
 **Run:**
 
 ```sh
-mv libdictbug-trace.so /usr/local/geek1011/
-echo " /usr/local/geek1011/libdictbug-trace.so" >> /etc/ld.so.preload
+mv libdictbug-trace.so /usr/local/pgaskin/
+echo " /usr/local/pgaskin/libdictbug-trace.so" >> /etc/ld.so.preload
 reboot
 logread -f
 ```

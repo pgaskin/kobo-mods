@@ -36,7 +36,7 @@ clean:
 	rm -f libdictbug-trace.so*
 
 koboroot:
-	tar cvzf KoboRoot.tgz --show-transformed --owner=root --group=root --mode="u=rwX,go=rX" --transform="s,libdictbug-trace.so,./usr/local/geek1011/libdictbug-trace.so," --transform="s,ld.so.preload,./etc/ld.so.preload," libdictbug-trace.so ld.so.preload
+	tar cvzf KoboRoot.tgz --show-transformed --owner=root --group=root --mode="u=rwX,go=rX" --transform="s,libdictbug-trace.so,./usr/local/pgaskin/libdictbug-trace.so," --transform="s,ld.so.preload,./etc/ld.so.preload," libdictbug-trace.so ld.so.preload
 
 .PHONY: all clean koboroot
 
@@ -46,4 +46,4 @@ libdictbug-trace.so: dictbug-trace.cc
 	$(CXX) $(CFLAGS) "$^" -o "$@" $(LDFLAGS)
 
 ld.so.preload:
-	echo "/usr/local/geek1011/libdictbug-trace.so" > ld.so.preload
+	echo "/usr/local/pgaskin/libdictbug-trace.so" > ld.so.preload

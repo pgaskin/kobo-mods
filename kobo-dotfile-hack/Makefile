@@ -1,6 +1,6 @@
 CC       = $(CROSS_PREFIX)gcc
 DESTDIR ?= /
-PREFIX  ?= /usr/local/geek1011
+PREFIX  ?= /usr/local/pgaskin
 CONFIG   = -DUSE_FULL_PATH -DNICKEL_ONLY
 CFLAGS  ?= -march=armv7-a -mtune=cortex-a8 -mfpu=neon -mfloat-abi=hard -mthumb
 
