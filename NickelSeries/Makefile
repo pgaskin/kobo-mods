@@ -11,7 +11,7 @@ CFLAGS   ?= $(CFLAGS_KOBO)
 CXXFLAGS ?= $(CFLAGS_KOBO)
 LDFLAGS  ?= $(LDFLAGS_KOBO) -Wl,--as-needed
 
-override CFLAGS   += -std=gnu11 -Wall -Wextra -Werror -isystemlib
+override CFLAGS   += -std=gnu11 -Wall -Wextra -Werror -isystemlib -DNM_LOG_NAME='"NickelSeries"'
 override CXXFLAGS += -std=gnu++11 -Wall -Wextra -Werror -isystemlib
 override LDFLAGS  += -Wl,--no-undefined
 
