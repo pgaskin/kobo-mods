@@ -1,0 +1,26 @@
+# make gitignore
+
+# KDevelop
+.kdev4/
+NickelMenu.kdev4
+.kateconfig
+
+# VSCode
+.vscode/
+
+# clangd
+compile_flags.txt
+
+# Build artifacts
+/KoboRoot.tgz
+/src/libns.so
+
+/src/qtplugin.moc
+/src/qtplugin.o
+
+/lib/miniz/miniz.o
+/lib/nm/dlhook.o
+/lib/nm/failsafe.o
+
+/src/hook.o
+/src/series.o
