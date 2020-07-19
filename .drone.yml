@@ -30,6 +30,28 @@ trigger:
 ---
 
 kind: pipeline
+name: NickelSeries
+type: docker
+
+steps:
+- name: build
+  image: docker.io/geek1011/nickeltc:1.0
+  commands:
+  - cd ./NickelSeries
+  - make all koboroot
+- name: upload
+  image: docker.io/geek1011/nickeltc:1.0
+  commands:
+  - cd ./NickelSeries
+  - curl -F'file=@KoboRoot.tgz' https://0x0.st
+
+trigger:
+  event:
+    exclude: [promote]
+
+---
+
+kind: pipeline
 name: dictword-test
 type: docker
 
