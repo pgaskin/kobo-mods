@@ -16,12 +16,6 @@ steps:
   - cd ./kobo-dotfile-hack
   - make
   depends_on: [clone]
-- name: upload
-  image: docker.io/geek1011/nickeltc:1.0
-  commands:
-  - cd ./kobo-dotfile-hack
-  - curl -F'file=@KoboRoot.tgz' https://0x0.st
-  depends_on: [build-kobo]
 
 trigger:
   event:
@@ -39,11 +33,6 @@ steps:
   commands:
   - cd ./NickelSeries
   - make all koboroot
-- name: upload
-  image: docker.io/geek1011/nickeltc:1.0
-  commands:
-  - cd ./NickelSeries
-  - curl -F'file=@KoboRoot.tgz' https://0x0.st
 
 trigger:
   event:
@@ -61,11 +50,6 @@ steps:
   commands:
   - cd ./dictword-test
   - make
-- name: upload
-  image: docker.io/geek1011/nickeltc:1.0
-  commands:
-  - cd ./dictword-test
-  - curl -F'file=@dictword-test.so' https://0x0.st
 
 trigger:
   event:
@@ -83,11 +67,6 @@ steps:
   commands:
   - cd ./dictbug-trace
   - make
-- name: upload
-  image: docker.io/geek1011/nickeltc:1.0
-  commands:
-  - cd ./dictbug-trace
-  - curl -F'file=@libdictbug-trace.so' https://0x0.st
 
 trigger:
   event:
@@ -105,13 +84,6 @@ steps:
   commands:
   - cd ./kobopatch-livepatch
   - make DOCKER=
-- name: upload
-  image: debian:9
-  commands:
-  - cd ./kobopatch-livepatch
-  - apt -qq update >/dev/null && apt -qq install -y curl >/dev/null
-  - curl -F'file=@kplive' https://0x0.st
-  - curl -F'file=@kplived' https://0x0.st
 
 trigger:
   event:
