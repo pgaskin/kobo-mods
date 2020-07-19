@@ -326,9 +326,10 @@ extern "C" __attribute__((visibility("default"))) void _ns_kepub_parse_hook(EPub
 
 extern "C" __attribute__((visibility("default"))) void _ns_epub_cid_hook(Content *_this, QVariant const& cid) {
     QString s = cid.toString();
-    NS_LOG("hook: intercepting EPUB Content::setId from libadobe for ('%s', %p)", qPrintable(s), _this);
-    if (s.startsWith("file://") && !s.contains("!") && !s.contains("#") && s.toLower().endsWith(".epub"))
+    if (s.startsWith("file://") && !s.contains("!") && !s.contains("#") && s.toLower().endsWith(".epub")) {
         ns_update_series(_this, s.remove("file://"));
-    NS_LOG("... calling original function");
+        NS_LOG("hook: intercepting EPUB Content::setId from libadobe for ('%s', %p)", qPrintable(s), _this);
+        NS_LOG("... calling original function");
+    }
     Content__setId(_this, cid);
 }
