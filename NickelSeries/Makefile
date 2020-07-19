@@ -11,7 +11,7 @@ CFLAGS   ?= $(CFLAGS_KOBO)
 CXXFLAGS ?= $(CFLAGS_KOBO)
 LDFLAGS  ?= $(LDFLAGS_KOBO) -Wl,--as-needed
 
-override CFLAGS   += -std=gnu11 -Wall -Wextra -Werror -isystemlib -DNM_LOG_NAME='"NickelSeries"'
+override CFLAGS   += -std=gnu11 -Wall -Wextra -Werror -isystemlib
 override CXXFLAGS += -std=gnu++11 -Wall -Wextra -Werror -isystemlib
 override LDFLAGS  += -Wl,--no-undefined
 
@@ -62,6 +62,8 @@ src/libns.so: override CFLAGS   += $(PTHREAD_CFLAGS) -fPIC
 src/libns.so: override CXXFLAGS += $(PTHREAD_CFLAGS) $(QT5CORE_CFLAGS) $(QT5GUI_CFLAGS) -fPIC
 src/libns.so: override LDFLAGS  += $(PTHREAD_LIBS) $(QT5CORE_LIBS) $(QT5GUI_LIBS) -ldl -Wl,-soname,libns.so
 src/libns.so: src/qtplugin.o src/hook.o src/series.o lib/miniz/miniz.o lib/nm/dlhook.o lib/nm/failsafe.o
+
+lib/nm/dlhook.o lib/nm/failsafe.o: override CFLAGS += -DNM_LOG_NAME='"NickelSeries"'
 
 override LIBRARIES += src/libns.so
 override MOCS      += src/qtplugin.moc
