@@ -7,6 +7,7 @@
 
 #include <dlfcn.h>
 #include <syslog.h>
+#include <unistd.h>
 
 #include <nm/dlhook.h>
 #include <nm/failsafe.h>
@@ -37,6 +38,15 @@ __attribute__((constructor)) void ns_init() {
     if (!(fs = nm_failsafe_create(&err)) && err) {
         NS_LOG("fatal: could not create failsafe: %s", err);
         free(err);
+        goto stop;
+    }
+
+    NS_LOG("init: checking for uninstall flag");
+
+    if (!access("/mnt/onboard/ns_uninstall", F_OK)) {
+        NS_LOG("init: flag found, uninstalling");
+        nm_failsafe_uninstall(fs);
+        unlink("/mnt/onboard/ns_uninstall");
         goto stop;
     }
 
