@@ -7,10 +7,10 @@ install:
 - docker pull golang:1.13-buster
 
 build_script:
-- sh: cd kobo-dotfile-hack   && docker run --rm --volume="$PWD:/src" --workdir=/src --entrypoint=make docker.io/geek1011/nickeltc:1.0 && cd ..
-- sh: cd dictword-test       && docker run --rm --volume="$PWD:/src" --workdir=/src --entrypoint=make docker.io/geek1011/nickeltc:1.0 && cd ..
-- sh: cd dictbug-trace       && docker run --rm --volume="$PWD:/src" --workdir=/src --entrypoint=make docker.io/geek1011/nickeltc:1.0 && cd ..
-- sh: cd kobopatch-livepatch && make DOCKER=docker all kplive-cross                                                                   && cd ..
+- sh: docker run --rm --volume="$APPVEYOR_BUILD_FOLDER:/src" --workdir="/src/kobo-dotfile-hack" --entrypoint=make docker.io/geek1011/nickeltc:1.0
+- sh: docker run --rm --volume="$APPVEYOR_BUILD_FOLDER:/src" --workdir="/src/dictword-test"     --entrypoint=make docker.io/geek1011/nickeltc:1.0
+- sh: docker run --rm --volume="$APPVEYOR_BUILD_FOLDER:/src" --workdir="/src/dictbug-trace"     --entrypoint=make docker.io/geek1011/nickeltc:1.0
+- sh: cd kobopatch-livepatch && make DOCKER=docker all kplive-cross && cd ..
 
 test: off
 
