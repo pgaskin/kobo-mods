@@ -58,11 +58,12 @@ koboroot:
 .PHONY: all clean gitignore install koboroot
 override GENERATED += KoboRoot.tgz
 
-src/libns.so: override CFLAGS   += $(PTHREAD_CFLAGS) -fPIC
-src/libns.so: override CXXFLAGS += $(PTHREAD_CFLAGS) $(QT5CORE_CFLAGS) $(QT5GUI_CFLAGS) -fPIC
+src/libns.so: override CFLAGS   += $(PTHREAD_CFLAGS) -fPIC -fvisibility=hidden
+src/libns.so: override CXXFLAGS += $(PTHREAD_CFLAGS) $(QT5CORE_CFLAGS) $(QT5GUI_CFLAGS) -fPIC -fvisibility=hidden -fvisibility-inlines-hidden
 src/libns.so: override LDFLAGS  += $(PTHREAD_LIBS) $(QT5CORE_LIBS) $(QT5GUI_LIBS) -ldl -Wl,-soname,libns.so
 src/libns.so: src/qtplugin.o src/hook.o src/series.o lib/miniz/miniz.o lib/nm/dlhook.o lib/nm/failsafe.o
 
+lib/miniz/miniz.o: override CFLAGS += -DMINIZ_NO_TIME -DMINIZ_NO_ARCHIVE_WRITING_APIS -DMINIZ_NO_ZLIB_APIS -DMINIZ_NO_ZLIB_COMPATIBLE_NAMES
 lib/nm/dlhook.o lib/nm/failsafe.o: override CFLAGS += -DNM_LOG_NAME='"NickelSeries"'
 
 override LIBRARIES += src/libns.so

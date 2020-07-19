@@ -19,7 +19,7 @@
 #define NS_VERSION "dev"
 #endif
 
-void ns_init2();
+static void ns_init2();
 
 __attribute__((constructor)) void ns_init() {
     // for if it's been loaded with LD_PRELOAD rather than as a Qt plugin
@@ -180,7 +180,7 @@ static Volume__setter
 static void (*EPubParser__parse)(EPubParser *_this, QString const& filename, Volume /*const&*/* volume);
 static void (*Content__setId)(Content *_this, QVariant const& value);
 
-void ns_init2() {
+static void ns_init2() {
     NS_LOG("init: resolving symbols");
 
     void *nph = dlsym(RTLD_DEFAULT, "_ns_kepub_parse_hook");
@@ -254,7 +254,7 @@ void ns_init2() {
     }
 }
 
-void ns_update_series(Volume *v, QString const& filename) {
+static void ns_update_series(Volume *v, QString const& filename) {
     NS_LOG("hook: updating series metadata for '%s'", qPrintable(filename));
 
     NS_LOG("... getting series metadata for '%s'", qPrintable(filename));
@@ -278,6 +278,13 @@ void ns_update_series(Volume *v, QString const& filename) {
 
         NS_LOG("... using ('%s', %s)", qPrintable(series), qPrintable(index));
 
+        bool ok;
+        double d = QVariant(index).toDouble(&ok);
+        if (ok) {
+            NS_LOG("... simplified series index '%s' to '%s'", qPrintable(index), qPrintable(QString::number(d)));
+            index = QString::number(d);
+        }
+
         if (Volume__setSeriesName) {
             NS_LOG("... Volume::setSeriesName('%s')", qPrintable(series));
             Volume__setSeriesName(v, series);
@@ -300,18 +307,18 @@ void ns_update_series(Volume *v, QString const& filename) {
     }
 }
 
-extern "C" void _ns_epub_cid_hook(Content *_this, QVariant const& cid) {
+extern "C" __attribute__((visibility("default"))) void _ns_kepub_parse_hook(EPubParser *_this, QString const& filename, Volume /*const&*/* volume) {
+    NS_LOG("hook: intercepting KEPUB EPubParser::parse for ('%s', %p)", qPrintable(filename), volume);
+    ns_update_series(volume, filename);
+    NS_LOG("... calling original parser");
+    EPubParser__parse(_this, filename, volume);
+}
+
+extern "C" __attribute__((visibility("default"))) void _ns_epub_cid_hook(Content *_this, QVariant const& cid) {
     QString s = cid.toString();
     NS_LOG("hook: intercepting EPUB Content::setId from libadobe for ('%s', %p)", qPrintable(s), _this);
     if (s.startsWith("file://") && !s.contains("!") && !s.contains("#") && s.toLower().endsWith(".epub"))
         ns_update_series(_this, s.remove("file://"));
     NS_LOG("... calling original function");
     Content__setId(_this, cid);
-}
-
-extern "C" void _ns_kepub_parse_hook(EPubParser *_this, QString const& filename, Volume /*const&*/* volume) {
-    NS_LOG("hook: intercepting KEPUB EPubParser::parse for ('%s', %p)", qPrintable(filename), volume);
-    ns_update_series(volume, filename);
-    NS_LOG("... calling original parser");
-    EPubParser__parse(_this, filename, volume);
 }
