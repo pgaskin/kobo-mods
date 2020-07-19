@@ -9,11 +9,17 @@ Theoretically, it should be possible to run this on a non-kobo ARM device (i.e. 
 
 **To build:**
 
+You can build dictword-test with [NickelTC](https://github.com/pgaskin/NickelTC) inside Docker using:
+
 ```sh
-make NILUJE=/toolchain/arm-nickel-linux-gnueabihf DOCKER=podman
+docker run --volume="$PWD:$PWD" --user="$(id --user):$(id --group)" --workdir="$PWD" --env=HOME --entrypoint=make --rm -it docker.io/geek1011/nickeltc:1.0
 ```
 
-If you are using docker, set DOCKER=docker. If you are building directly on the host, leave it out entirely and set NILUJE accordingly. If you are using a custom toolchain/sysroot (which isn't one of NiLuJe's), set CROSS_PREFIX instead and set the Qt flags appropriately if not using pkg-config.
+Or, on the host using:
+
+```sh
+make CROSS_COMPILE=/path/to/nickeltc/bin/arm-nickel-linux-gnueabihf-
+```
 
 **To run (on a Kobo):**
 

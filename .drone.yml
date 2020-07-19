@@ -11,17 +11,15 @@ steps:
   - HOME=./tmp make -f Makefile.native test
   depends_on: [clone]
 - name: build-kobo
-  image: geek1011/kobo-toolchain:latest
+  image: docker.io/geek1011/nickeltc:1.0
   commands:
   - cd ./kobo-dotfile-hack
-  - apt -qq update >/dev/null && apt -qq install -y make >/dev/null
-  - make CROSS_PREFIX=arm-nickel-linux-gnueabihf-
+  - make
   depends_on: [clone]
 - name: upload
-  image: debian:9
+  image: docker.io/geek1011/nickeltc:1.0
   commands:
   - cd ./kobo-dotfile-hack
-  - apt -qq update >/dev/null && apt -qq install -y curl >/dev/null
   - curl -F'file=@KoboRoot.tgz' https://0x0.st
   depends_on: [build-kobo]
 
@@ -37,15 +35,14 @@ type: docker
 
 steps:
 - name: build
-  image: geek1011/kobo-toolchain:latest
+  image: docker.io/geek1011/nickeltc:1.0
   commands:
   - cd ./dictword-test
-  - make dictword-test.so NILUJE=/toolchain/arm-nickel-linux-gnueabihf DOCKER=
+  - make
 - name: upload
-  image: debian:9
+  image: docker.io/geek1011/nickeltc:1.0
   commands:
   - cd ./dictword-test
-  - apt -qq update >/dev/null && apt -qq install -y curl >/dev/null
   - curl -F'file=@dictword-test.so' https://0x0.st
 
 trigger:
@@ -60,15 +57,14 @@ type: docker
 
 steps:
 - name: build
-  image: geek1011/nickeltc:1.0
+  image: docker.io/geek1011/nickeltc:1.0
   commands:
   - cd ./dictbug-trace
   - make
 - name: upload
-  image: debian:9
+  image: docker.io/geek1011/nickeltc:1.0
   commands:
   - cd ./dictbug-trace
-  - apt -qq update >/dev/null && apt -qq install -y curl >/dev/null
   - curl -F'file=@libdictbug-trace.so' https://0x0.st
 
 trigger:

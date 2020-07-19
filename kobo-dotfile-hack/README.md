@@ -14,7 +14,18 @@ Since FW 4.17.13651, Kobo will import from dotfiles/folders. This is a LD_PRELOA
 - Needs SSH/telnet access to remove (or a factory reset).
 
 ## Building
-To build, `make CROSS_PREFIX=/path/to/kobo/toolchain/bin/arm-whatever-linux-gnueabihf-`. For convenience, you can build using @NiLuJe's toolchain inside Docker with `docker run --rm -it geek1011/kobo-toolchain:latest` then `git clone https://github.com/pgaskin/kobo-mods; cd kobo-mods/kobo-dotfile-hack; make CROSS_PREFIX=arm-nickel-linux-gnueabihf-`.
+
+You can build kobo-dotfile-hack with [NickelTC](https://github.com/pgaskin/NickelTC) inside Docker using:
+
+```sh
+docker run --volume="$PWD:$PWD" --user="$(id --user):$(id --group)" --workdir="$PWD" --env=HOME --entrypoint=make --rm -it docker.io/geek1011/nickeltc:1.0
+```
+
+Or, on the host using:
+
+```sh
+make CROSS_COMPILE=/path/to/nickeltc/bin/arm-nickel-linux-gnueabihf-
+```
 
 ## Testing
 To test this on any Linux machine, run `make -f Makefile.native test`.

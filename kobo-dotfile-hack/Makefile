@@ -1,8 +1,11 @@
-CC       = $(CROSS_PREFIX)gcc
+define deps =
+endef
+include ../nickeltc.mk
+
 DESTDIR ?= /
 PREFIX  ?= /usr/local/pgaskin
 CONFIG   = -DUSE_FULL_PATH -DNICKEL_ONLY
-CFLAGS  ?= -march=armv7-a -mtune=cortex-a8 -mfpu=neon -mfloat-abi=hard -mthumb
+CFLAGS  ?= $(CFLAGS_KOBO) $(LDFLAGS_KOBO)
 
 override CFLAGS := -Wall -Wno-deprecated-declarations -shared -ldl -std=gnu99 -fPIC $(CONFIG) $(CFLAGS)
 
