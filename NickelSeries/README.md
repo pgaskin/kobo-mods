@@ -12,6 +12,7 @@ Adds native support for parsing series metadata from EPUB files.
 - Survives firmware updates.
 - Does not modify any system files, single file only.
 - Easy to uninstall (either delete it over telnet/ssh or create a file named `ns_uninstall` in the KOBOeReader partition).
+- Metadata appears instantly.
 
 **Troubleshooting:**
 
