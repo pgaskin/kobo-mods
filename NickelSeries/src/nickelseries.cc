@@ -49,7 +49,7 @@ static struct nh_dlsym NickelSeriesDlsym[] = {
 };
 
 NickelHook(
-    .init  = NULL,
+    .init  = nullptr,
     .info  = &NickelSeries,
     .hook  = NickelSeriesHook,
     .dlsym = NickelSeriesDlsym,
