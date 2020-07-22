@@ -1,6 +1,6 @@
 define deps =
 endef
-include ../nickeltc.mk
+include ../.lib/nickeltc.mk
 
 DESTDIR ?= /
 PREFIX  ?= /usr/local/pgaskin

@@ -8,10 +8,10 @@
 .cache/
 compile_commands.json
 /KoboRoot.tgz
-/src/libns.so
-/lib/miniz/miniz.o
-/lib/nh/nh.o
-/src/nickelseries.o
-/src/series.o
-/lib/nh/nhplugin.moc
-/lib/nh/nhplugin.moc.o
+/libns.so
+/../.lib/miniz/miniz.o
+/../.lib/nh/nh.o
+/nickelseries.o
+/series.o
+/../.lib/nh/nhplugin.moc
+/../.lib/nh/nhplugin.moc.o

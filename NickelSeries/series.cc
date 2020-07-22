@@ -4,7 +4,7 @@
 #include <QString>
 #include <QXmlStreamReader>
 
-#include <miniz/miniz.h>
+#include <miniz.h>
 
 #include "series.h"
 

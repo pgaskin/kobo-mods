@@ -1,0 +1,9 @@
+# richgel999/miniz@v2.1.0
+miniz/miniz.c linguist-vendored=true
+miniz/miniz.h linguist-vendored=true
+
+# pgaskin/NickelMenu@eb61dcf0e7af0fb2cc639fde92783d4db613f7fd
+nh/nh.c          linguist-vendored=true
+nh/nhplugin.h    linguist-vendored=true
+nh/NickelHook.h  linguist-vendored=true
+nh/NickelHook.mk linguist-vendored=true

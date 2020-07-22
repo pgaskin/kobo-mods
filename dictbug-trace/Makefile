@@ -3,7 +3,7 @@ define deps =
  $(call pkgconf,QT5WIDGETS,Qt5Widgets) \
  $(call pkgconf,QT5NETWORK,Qt5Network)
 endef
-include ../nickeltc.mk
+include ../.lib/nickeltc.mk
 
 CFLAGS  ?= $(CFLAGS_KOBO) -fPIC -shared
 LDFLAGS ?= $(LDFLAGS_KOBO) -ldl -s

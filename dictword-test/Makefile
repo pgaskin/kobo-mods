@@ -2,7 +2,7 @@ define deps =
  $(call pkgconf,QT5CORE,Qt5Core) \
  $(call pkgconf,QT5WIDGETS,Qt5Widgets)
 endef
-include ../nickeltc.mk
+include ../.lib/nickeltc.mk
 
 # Note: this builds a executable library:
 #  https://unix.stackexchange.com/questions/223385/why-and-how-are-some-shared-libraries-runnable-as-though-they-are-executables
