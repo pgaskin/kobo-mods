@@ -7,16 +7,19 @@ install:
 - docker pull golang:1.13-buster
 
 build_script:
-- sh: docker run --rm --volume="$APPVEYOR_BUILD_FOLDER:/src" --workdir="/src/kobo-dotfile-hack" --entrypoint=make docker.io/geek1011/nickeltc:1.0
-- sh: docker run --rm --volume="$APPVEYOR_BUILD_FOLDER:/src" --workdir="/src/NickelSeries"      --entrypoint=make docker.io/geek1011/nickeltc:1.0 all koboroot
-- sh: docker run --rm --volume="$APPVEYOR_BUILD_FOLDER:/src" --workdir="/src/dictword-test"     --entrypoint=make docker.io/geek1011/nickeltc:1.0
-- sh: docker run --rm --volume="$APPVEYOR_BUILD_FOLDER:/src" --workdir="/src/dictbug-trace"     --entrypoint=make docker.io/geek1011/nickeltc:1.0
+- sh: docker run --rm --volume="$APPVEYOR_BUILD_FOLDER:/src" --workdir="/src/kobo-dotfile-hack"    --entrypoint=make docker.io/geek1011/nickeltc:1.0
+- sh: docker run --rm --volume="$APPVEYOR_BUILD_FOLDER:/src" --workdir="/src/kobo-dotfile-hack-ng" --entrypoint=make docker.io/geek1011/nickeltc:1.0 all koboroot
+- sh: docker run --rm --volume="$APPVEYOR_BUILD_FOLDER:/src" --workdir="/src/NickelSeries"         --entrypoint=make docker.io/geek1011/nickeltc:1.0 all koboroot
+- sh: docker run --rm --volume="$APPVEYOR_BUILD_FOLDER:/src" --workdir="/src/dictword-test"        --entrypoint=make docker.io/geek1011/nickeltc:1.0
+- sh: docker run --rm --volume="$APPVEYOR_BUILD_FOLDER:/src" --workdir="/src/dictbug-trace"        --entrypoint=make docker.io/geek1011/nickeltc:1.0
 - sh: cd kobopatch-livepatch && make DOCKER=docker all kplive-cross && cd ..
 
 test: off
 
 artifacts:
 - path: kobo-dotfile-hack/KoboRoot.tgz
+- path: kobo-dotfile-hack-ng/src/libdfh.so
+- path: kobo-dotfile-hack-ng/KoboRoot.tgz
 - path: NickelSeries/src/libns.so
 - path: NickelSeries/KoboRoot.tgz
 - path: dictword-test/dictword-test.so

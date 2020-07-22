@@ -24,6 +24,23 @@ trigger:
 ---
 
 kind: pipeline
+name: kobo-dotfile-hack-ng
+type: docker
+
+steps:
+- name: build
+  image: docker.io/geek1011/nickeltc:1.0
+  commands:
+  - cd ./kobo-dotfile-hack-ng
+  - make
+
+trigger:
+  event:
+    exclude: [promote]
+
+---
+
+kind: pipeline
 name: NickelSeries
 type: docker
 
