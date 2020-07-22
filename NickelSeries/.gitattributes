@@ -2,7 +2,7 @@
 lib/miniz/miniz.c linguist-vendored=true
 lib/miniz/miniz.h linguist-vendored=true
 
-# pgaskin/NickelMenu@16b864d913d81bd7eb433c32ebccb4370a23ff9d
+# pgaskin/NickelMenu@ec849271418e9e798ac1cc2cac23ff129c70934a
 lib/nh/nh.c          linguist-vendored=true
 lib/nh/nhplugin.h    linguist-vendored=true
 lib/nh/NickelHook.h  linguist-vendored=true

@@ -76,7 +76,7 @@ override GENERATED   += KoboRoot.tgz $(LIBRARY) $(OBJECTS_C) $(OBJECTS_CXX) $(MO
 
 ## gitignore
 # override GITIGNORE += <pattern>
-override GITIGNORE += .kdev4/ *.kdev4 .kateconfig .vscode/ .idea/ .clangd/ compile_commands.json $(addprefix /,$(GENERATED))
+override GITIGNORE += .kdev4/ *.kdev4 .kateconfig .vscode/ .idea/ .clangd/ .cache/ compile_commands.json $(addprefix /,$(GENERATED))
 
 ###
 
@@ -179,7 +179,7 @@ $(OBJECTS_MOC): %.moc.o: %.moc
 $(MOCS_MOC): %.moc: %.h
 	$(call nh_cmd_moch,$@,$^)
 
-override nh_clangd_file = {"directory": "$(realpath $(CURDIR))", "file": "$(2)", "command": "$(subst \,\\,$(subst ",\",$(call $(1),$(2),$(3))))"}
+override nh_clangd_file = {"directory": "$(realpath $(CURDIR))", "file": "$(3)", "command": "$(subst \,\\,$(subst ",\",$(call $(1),$(2),$(3))))"}
 override nh_clangd_objs = $(foreach object,$(3),$(nh_comma) $(call nh_clangd_file,nh_cmd_$(1),$(object),$(patsubst %.o,$(2),$(object))))
 
 clangd:
@@ -210,12 +210,12 @@ override nh_namel := $(shell echo "$(nh_names)" | tr '[:upper:]' '[:lower:]')
 $(if $(nh_namet),,$(error NAME must contain at least one uppercase letter, preferably more to be unique))
 
 LIBRARY  ?= lib$(nh_namel).so
-NHSOURCE ?= src/$(patsubst lib%,%,$(patsubst %.so,%,$(LIBRARY))).cc
+NHSOURCE ?= src/$(nh_namel).cc
 SOURCES  ?= $(wildcard src/*.c src/*.cc)
 
 override nh_dir    := $(dir $(lastword $(MAKEFILE_LIST)))
 override nh_mkdir   = @echo "$@"; mkdir $@
-override nh_create  = @echo "$@"; echo > $@
+override nh_create  = @echo "$@"; echo -n > $@
 override nh_write   = @echo "| $(subst ",\",$(1))"; echo "$(subst ",\",$(1))" >> $@
 
 $(if $(wildcard $(NHSOURCE)),$(info Warning: File named $(NHSOURCE) found in src dir, not generating NickelHook base.))
@@ -250,8 +250,9 @@ $(NHSOURCE): src
 	$(call nh_write,static struct nh_info $(nh_names) = {)
 	$(call nh_write,    .name           = "$(NAME)"$(nh_comma))
 	$(call nh_write,    .desc           = ""$(nh_comma))
-	$(call nh_write,    .uninstall_flag = "/mnt/onboard/$(nh_namet)_uninstall"$(nh_comma))
+	$(call nh_write,    .uninstall_flag = "/mnt/onboard/$(nh_nameu)_uninstall"$(nh_comma))
 	$(call nh_write,};)
+	$(call nh_write,)
 	$(call nh_write,static struct nh_hook $(nh_names)Hook[] = {)
 	$(call nh_write,    {0}$(nh_comma))
 	$(call nh_write,};)
