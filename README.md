@@ -21,3 +21,6 @@ Mods in **bold** are actively maintained.
 - **Stable:** All major features completed, stable.
 - **Complete:** All planned features completed, stable.
 - **Released:** Ready for general usage.
+
+**Abandoned mods:**
+- [kobopatch-livepatch](https://github.com/pgaskin/kobo-mods/commit/777cfe6637d69fdc59905c5c357f520f5e73ab28)
