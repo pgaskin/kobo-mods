@@ -12,6 +12,6 @@ compile_commands.json
 /../.lib/miniz/miniz.o
 /../.lib/nh/nh.o
 /nickelseries.o
-/series.o
+/metadata.o
 /../.lib/nh/nhplugin.moc
 /../.lib/nh/nhplugin.moc.o

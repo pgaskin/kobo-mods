@@ -11,7 +11,7 @@
 
 #include <NickelHook.h>
 
-#include "series.h"
+#include "metadata.h"
 
 typedef void EPubParser;
 typedef void Content;
@@ -19,18 +19,19 @@ typedef Content Volume;
 
 typedef void (*Volume__setter)(Volume *_this, QVariant const& value); // the value is almost always a QString
 
-static Volume__setter
-    Volume__setSeriesName = nullptr,
-    Volume__setSeriesNumber = nullptr,
-    Volume__setSeriesNumberFloat = nullptr,
-    Volume__setSeriesId = nullptr;
+Volume__setter
+    Volume__setSeriesName,
+    Volume__setSeriesNumber,
+    Volume__setSeriesNumberFloat,
+    Volume__setSeriesId,
+    Volume__setSubtitle;
 
 static void (*EPubParser__parse)(EPubParser *_this, QString const& filename, Volume /*const&*/* volume);
 static void (*Content__setId)(Content *_this, QVariant const& value);
 
 static struct nh_info NickelSeries = (struct nh_info){
     .name           = "NickelSeries",
-    .desc           = "Adds built-in EPUB/KEPUB series metadata support.",
+    .desc           = "Adds built-in EPUB/KEPUB series (and subtitle) metadata support.",
     .uninstall_flag = "/mnt/onboard/ns_uninstall",
 };
 
@@ -45,6 +46,7 @@ static struct nh_dlsym NickelSeriesDlsym[] = {
     {.name = "_ZN6Volume15setSeriesNumberERK8QVariant",      .out = nh_symoutptr(Volume__setSeriesNumber)},
     {.name = "_ZN6Volume20setSeriesNumberFloatERK8QVariant", .out = nh_symoutptr(Volume__setSeriesNumberFloat), .desc = "series number on newer firmware versions", .optional = true},
     {.name = "_ZN6Volume11setSeriesIdERK8QVariant",          .out = nh_symoutptr(Volume__setSeriesId),          .desc = "series tab on 4.20.14601+",                .optional = true},
+    {.name = "_ZN6Volume11setSubtitleERK8QVariant",          .out = nh_symoutptr(Volume__setSubtitle)},
     {0},
 };
 
@@ -56,25 +58,27 @@ NickelHook(
 )
 
 static void ns_update_series(Volume *v, QString const& filename) {
-    nh_log("hook: updating series metadata for '%s'", qPrintable(filename));
+    nh_log("hook: updating metadata for '%s'", qPrintable(filename));
 
-    nh_log("... getting series metadata for '%s'", qPrintable(filename));
-    auto r = ns_series(filename.toLatin1().constData());
-    if (!r.second.isNull()) {
-        nh_log("... error: '%s', ignoring", qPrintable(r.second));
-    } else {
+    NSMetadata meta(filename.toLatin1().constData());
+    if (!meta.error().isNull()) {
+        nh_log("... error: '%s', ignoring", qPrintable(meta.error()));
+        return;
+    }
+
+    if (!meta.series.isEmpty()) {
         QString series;
         QString index;
 
-        for (QString id : r.first.keys()) {
-            series = r.first[id].first;
-            index  = r.first[id].second;
+        for (QString id : meta.series.keys()) {
+            series = meta.series[id].first;
+            index  = meta.series[id].second;
             nh_log("... found metadata: id='%s' series='%s' index='%s'", qPrintable(id), qPrintable(series), qPrintable(index));
         }
 
-        if (r.first.contains("!calibre")) {
-            series = r.first["!calibre"].first;
-            index = r.first["!calibre"].second;
+        if (meta.series.contains(NSMetadata::calibre)) {
+            series = meta.series[NSMetadata::calibre].first;
+            index = meta.series[NSMetadata::calibre].second;
         }
 
         nh_log("... using ('%s', %s)", qPrintable(series), qPrintable(index));
@@ -101,6 +105,22 @@ static void ns_update_series(Volume *v, QString const& filename) {
             nh_log("... Volume::setSeriesId('%s')", qPrintable(series));
             Volume__setSeriesId(v, series); // matches the Calibre Kobo plugin's behaviour for compatibility
         }
+    }
+
+    if (!meta.subtitle.isEmpty()) {
+        QString subtitle;
+        for (QString id : meta.subtitle.keys()) {
+            subtitle = meta.subtitle[id];
+            nh_log("... found metadata: id='%s' subtitle='%s'", qPrintable(id), qPrintable(subtitle));
+        }
+
+        if (meta.subtitle.contains(NSMetadata::calibre))
+            subtitle = meta.subtitle[NSMetadata::calibre];
+
+        nh_log("... using '%s'", qPrintable(subtitle));
+
+        nh_log("... Volume::setSubtitle('%s')", qPrintable(subtitle));
+        Volume__setSubtitle(v, subtitle);
     }
 }
 
