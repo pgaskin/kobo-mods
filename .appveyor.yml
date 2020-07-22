@@ -4,7 +4,6 @@ version: '{build}'
 
 install:
 - docker pull docker.io/geek1011/nickeltc:1.0
-- docker pull golang:1.13-buster
 
 build_script:
 - sh: docker run --rm --volume="$APPVEYOR_BUILD_FOLDER:/src" --workdir="/src/kobo-dotfile-hack"    --entrypoint=make docker.io/geek1011/nickeltc:1.0
@@ -12,7 +11,6 @@ build_script:
 - sh: docker run --rm --volume="$APPVEYOR_BUILD_FOLDER:/src" --workdir="/src/NickelSeries"         --entrypoint=make docker.io/geek1011/nickeltc:1.0 all koboroot
 - sh: docker run --rm --volume="$APPVEYOR_BUILD_FOLDER:/src" --workdir="/src/dictword-test"        --entrypoint=make docker.io/geek1011/nickeltc:1.0
 - sh: docker run --rm --volume="$APPVEYOR_BUILD_FOLDER:/src" --workdir="/src/dictbug-trace"        --entrypoint=make docker.io/geek1011/nickeltc:1.0
-- sh: cd kobopatch-livepatch && make DOCKER=docker all kplive-cross && cd ..
 
 test: off
 
@@ -25,7 +23,3 @@ artifacts:
 - path: dictword-test/dictword-test.so
 - path: dictword-test/dwt-wrap
 - path: dictbug-trace/libdictbug-trace.so
-- path: kobopatch-livepatch/kplived
-- path: kobopatch-livepatch/kplive-windows.exe
-- path: kobopatch-livepatch/kplive-linux-64bit
-- path: kobopatch-livepatch/kplive-darwin-64bit

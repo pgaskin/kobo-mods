@@ -88,20 +88,3 @@ steps:
 trigger:
   event:
     exclude: [promote]
-
----
-
-kind: pipeline
-name: kobopatch-livepatch
-type: docker
-
-steps:
-- name: build
-  image: golang:1.13-buster
-  commands:
-  - cd ./kobopatch-livepatch
-  - make DOCKER=
-
-trigger:
-  event:
-    exclude: [promote]

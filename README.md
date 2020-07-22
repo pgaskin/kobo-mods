@@ -11,7 +11,6 @@ Binaries for the latest commit can be downloaded [here](https://ci.appveyor.com/
 | **[dictword-test](./dictword-test)** | This tool gets the prefix used for word lookup in the dictionary directly from libnickel. | Debugging | Complete |
 | [kobo-dotfile-hack](./kobo-dotfile-hack) | Since FW 4.17.13651, Kobo will import from dotfiles/folders. This is a LD_PRELOAD hack to fix that. | General | Complete, Released, Superseded |
 | [dictbug-trace](./dictbug-trace) | This LD_PRELOAD library logs some dictionary-related things to syslog. | Debugging | As-is |
-| [kobopatch-livepatch](./kobopatch-livepatch) | Live-patching nickel with ptrace. | Advanced | POC |
 
 Mods in **bold** are actively maintained.
 
@@ -23,4 +22,6 @@ Mods in **bold** are actively maintained.
 - **Stable:** All major features completed, stable.
 - **Complete:** All planned features completed, stable.
 - **Released:** Ready for general usage.
-- **Superseded:** Has been replaced with a better alternative.
+
+**Abandoned mods:**
+- [kobopatch-livepatch](https://github.com/pgaskin/kobo-mods/commit/777cfe6637d69fdc59905c5c357f520f5e73ab28)
