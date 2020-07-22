@@ -10,7 +10,6 @@ Binaries for the latest commit can be downloaded [here](https://ci.appveyor.com/
 | **[NickelSeries](./NickelSeries)** | Adds series metadata support to libnickel. | General | Stable, Released |
 | **[dictword-test](./dictword-test)** | This tool gets the prefix used for word lookup in the dictionary directly from libnickel. | Debugging | Complete |
 | [dictbug-trace](./dictbug-trace) | This LD_PRELOAD library logs some dictionary-related things to syslog. | Debugging | As-is |
-| [kobopatch-livepatch](./kobopatch-livepatch) | Live-patching nickel with ptrace. | Advanced | POC |
 
 Mods in **bold** are actively maintained.
 
