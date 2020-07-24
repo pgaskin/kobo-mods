@@ -28,6 +28,9 @@ private:
 
 const QString NSMetadata::calibre = QStringLiteral("!calibre");
 
+NSMetadata::NSMetadata(QString const &filename)
+    : NSMetadata(filename.toUtf8().constData()) {};
+
 NSMetadata::NSMetadata(const char *filename) {
     MzZipArchiveReader zip(filename);
     if (!zip.valid()) {
@@ -68,7 +71,7 @@ NSMetadata::NSMetadata(const char *filename) {
             continue;
         if (r.attributes().value("media-type") != "application/oebps-package+xml")
             continue;
-        if ((buf = zip.extract_file(r.attributes().value("full-path").toLatin1().constData())).isNull()) {
+        if ((buf = zip.extract_file(r.attributes().value("full-path").toUtf8().constData())).isNull()) {
             this->_error = QStringLiteral("parse epub '%1': read package '%2': %3").arg(filename).arg(r.attributes().value("full-path").toString()).arg(zip.error());
             return;
         }

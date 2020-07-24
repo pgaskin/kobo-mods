@@ -58,7 +58,7 @@ NickelHook(
 static void ns_update_series(Volume *v, QString const& filename) {
     nh_log("hook: updating metadata for '%s'", qPrintable(filename));
 
-    NSMetadata meta(filename.toLatin1().constData());
+    NSMetadata meta(filename);
     if (!meta.error().isNull()) {
         nh_log("... error: '%s', ignoring", qPrintable(meta.error()));
         return;

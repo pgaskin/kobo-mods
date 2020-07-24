@@ -25,6 +25,7 @@ struct NSMetadata {
     QMap<QString, QPair<QString, QString>> series;
 
     // NSMetadata reads metadata from the specified EPUB 2/3 file.
+    NSMetadata(QString const &filename);
     NSMetadata(const char *filename);
 
     // NSMetadata reads metadata from the provided package document.
