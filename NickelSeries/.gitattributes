@@ -1,10 +1,4 @@
 # richgel999/miniz@v2.1.0
-lib/miniz/miniz.c linguist-vendored=true
-lib/miniz/miniz.h linguist-vendored=true
+miniz/miniz.c linguist-vendored=true
+miniz/miniz.h linguist-vendored=true
 
-# pgaskin/NickelMenu@v0.2.1
-lib/nm/dlhook.c   linguist-vendored=true
-lib/nm/dlhook.h   linguist-vendored=true
-lib/nm/failsafe.c linguist-vendored=true
-lib/nm/failsafe.h linguist-vendored=true
-lib/nm/util.h     linguist-vendored=true

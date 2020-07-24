@@ -4,15 +4,16 @@
 #include <QString>
 #include <QXmlStreamReader>
 
-#include <miniz/miniz.h>
+#include <miniz.h>
 
-#include "series.h"
+#include "metadata.h"
+#include "qxmlstream.h"
 
 #pragma GCC diagnostic ignored "-Wmissing-field-initializers"
 
 class MzZipArchiveReader {
 public:
-    explicit MzZipArchiveReader(const char *filename, mz_uint32 flags = 0) : _z({}),_v(mz_zip_reader_init_file(&_z, filename, flags)) {}
+    explicit MzZipArchiveReader(const char *filename, mz_uint32 flags = 0) : _z({}), _v(mz_zip_reader_init_file(&_z, filename, flags)) {}
     MzZipArchiveReader(const MzZipArchiveReader&) = delete;
     MzZipArchiveReader& operator=(MzZipArchiveReader const&) = delete;
     ~MzZipArchiveReader() { if (_v) mz_zip_reader_end(&_z); }
@@ -25,19 +26,19 @@ private:
     bool _v;
 };
 
-QPair<QMap<QString, QPair<QString, QString>>, QString> ns_series(const char *filename) {
-    QPair<QMap<QString, QPair<QString, QString>>, QString> result;
+const QString NSMetadata::calibre = QStringLiteral("!calibre");
 
+NSMetadata::NSMetadata(const char *filename) {
     MzZipArchiveReader zip(filename);
     if (!zip.valid()) {
-        result.second = QStringLiteral("parse epub '%1': open zip: %2").arg(filename).arg(zip.error());
-        return result;
+        this->_error = QStringLiteral("parse epub '%1': open zip: %2").arg(filename).arg(zip.error());
+        return;
     }
 
     QByteArray buf = zip.extract_file("META-INF/container.xml");
     if (buf.isNull()) {
-        result.second = QStringLiteral("parse epub '%1': read container 'META-INF/container.xml': %2").arg(filename).arg(zip.error());
-        return result;
+        this->_error = QStringLiteral("parse epub '%1': read container 'META-INF/container.xml': %2").arg(filename).arg(zip.error());
+        return;
     }
 
     QXmlStreamReader r;
@@ -68,23 +69,36 @@ QPair<QMap<QString, QPair<QString, QString>>, QString> ns_series(const char *fil
         if (r.attributes().value("media-type") != "application/oebps-package+xml")
             continue;
         if ((buf = zip.extract_file(r.attributes().value("full-path").toLatin1().constData())).isNull()) {
-            result.second = QStringLiteral("parse epub '%1': read package '%2': %3").arg(filename).arg(r.attributes().value("full-path").toString()).arg(zip.error());
-            return result;
+            this->_error = QStringLiteral("parse epub '%1': read package '%2': %3").arg(filename).arg(r.attributes().value("full-path").toString()).arg(zip.error());
+            return;
         }
     }
 
     if (r.hasError()) {
-        result.second = QStringLiteral("parse epub '%1': parse container: %2").arg(filename).arg(r.errorString());
-        return result;
+        this->_error = QStringLiteral("parse epub '%1': parse container: %2").arg(filename).arg(r.errorString());
+        return;
     } else if (buf.isNull()) {
-        result.second = QStringLiteral("parse epub '%1': parse container: could not find rootfile").arg(filename);
-        return result;
+        this->_error = QStringLiteral("parse epub '%1': parse container: could not find rootfile").arg(filename);
+        return;
     }
 
     r.clear();
     r.addData(buf);
 
-    QMap<QString, QPair<QString, QString>> series;
+    this->init(r);
+    if (!this->_error.isNull())
+        this->_error = QStringLiteral("parse epub '%1': %2").arg(filename).arg(this->_error);
+}
+
+NSMetadata::NSMetadata(QXmlStreamReader &r) {
+    this->init(r);
+}
+
+QString const &NSMetadata::error() const {
+    return this->_error;
+}
+
+void NSMetadata::init(QXmlStreamReader &r) {
     for (int x[4] = {}; !r.atEnd(); r.readNext()) {
         switch (r.tokenType()) {
         case QXmlStreamReader::StartElement:
@@ -110,14 +124,14 @@ QPair<QMap<QString, QPair<QString, QString>>, QString> ns_series(const char *fil
         QStringRef name = r.attributes().value("name");
         if (name.startsWith("calibre:series")) {
             if (name == "calibre:series")
-                series["!calibre"].first = r.attributes().value("content").toString();
+                this->series[NSMetadata::calibre].first = r.attributes().value("content").toString();
             else if (name == "calibre:series_index")
-                series["!calibre"].second = r.attributes().value("content").toString();
+                this->series[NSMetadata::calibre].second = r.attributes().value("content").toString();
+            continue;
         }
 
         name = r.attributes().value("property");
         if (name == "belongs-to-collection" || name == "collection-type" || name == "group-position") {
-            QString property = name.toString();
             QString id = r.attributes().value("refines").startsWith("#")
                 ? r.attributes().value("refines").mid(1).toString()
                 : r.attributes().value("id").toString();
@@ -129,25 +143,20 @@ QPair<QMap<QString, QPair<QString, QString>>, QString> ns_series(const char *fil
             if (text.isEmpty())
                 continue;
 
-            if (property == "collection-type" && text != "series")
-                series.remove(id);
-            else if (property == "group-position")
-                series[id].second = text;
-            else if (!series.contains(id))
-                if (property == "belongs-to-collection" && !id.isEmpty())
-                    series[id].first = text;
+            if (name == "collection-type" && text != "series")
+                this->series.remove(id);
+            else if (name == "group-position")
+                this->series[id].second = text;
+            else if (!this->series.contains(id) && name == "belongs-to-collection" && !id.isEmpty())
+                this->series[id].first = text;
+            continue;
         }
     }
 
-    if (r.hasError()) {
-        result.second = QStringLiteral("parse epub '%1': parse package: %2").arg(filename).arg(r.errorString());
-        return result;
-    }
+    for (QString source : this->series.keys())
+        if (this->series[source].first.isEmpty() || this->series[source].second.isEmpty())
+            this->series.remove(source);
 
-    for (QString source : series.keys())
-        if (series[source].first.isEmpty() || series[source].second.isEmpty())
-            series.remove(source);
-
-    result.first = series;
-    return result;
+    if (r.hasError())
+        this->_error = QStringLiteral("parse package: %1").arg(r.errorString());
 }

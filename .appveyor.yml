@@ -19,7 +19,7 @@ artifacts:
 - path: kobo-dotfile-hack/KoboRoot.tgz
 - path: kobo-dotfile-hack-ng/libdfh.so
 - path: kobo-dotfile-hack-ng/KoboRoot.tgz
-- path: NickelSeries/src/libns.so
+- path: NickelSeries/libns.so
 - path: NickelSeries/KoboRoot.tgz
 - path: dictword-test/dictword-test.so
 - path: dictword-test/dwt-wrap
