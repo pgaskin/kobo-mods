@@ -5,10 +5,11 @@ Binaries for the latest commit can be downloaded [here](https://ci.appveyor.com/
 
 | Mod | Description | Usage | Status |
 | --- | --- | --- | --- |
-| **[kobo-dotfile-hack](./kobo-dotfile-hack)** | Since FW 4.17.13651, Kobo will import from dotfiles/folders. This is a LD_PRELOAD hack to fix that. | General | Complete, Released |
+| **[kobo-dotfile-hack-ng](./kobo-dotfile-hack-ng)** | Prevents Nickel from discovering and importing dotfiles/folders. Improved version of [kobo-dotfile-hack](./kobo-dotfile-hack). | General | Complete |
 | **[NickelMenu](https://go.pgaskin.net/kobo/nm)** | Adds custom menu items to nickel. | General | Complete, Released |
 | **[NickelSeries](./NickelSeries)** | Adds series metadata support to libnickel. | General | Stable, Released |
 | **[dictword-test](./dictword-test)** | This tool gets the prefix used for word lookup in the dictionary directly from libnickel. | Debugging | Complete |
+| [kobo-dotfile-hack](./kobo-dotfile-hack) | Since FW 4.17.13651, Kobo will import from dotfiles/folders. This is a LD_PRELOAD hack to fix that. | General | Complete, Released, Superseded |
 | [dictbug-trace](./dictbug-trace) | This LD_PRELOAD library logs some dictionary-related things to syslog. | Debugging | As-is |
 
 Mods in **bold** are actively maintained.
