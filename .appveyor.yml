@@ -3,6 +3,7 @@ image: ubuntu
 version: '{build}'
 
 install:
+- git submodule update --init --recursive
 - docker pull docker.io/geek1011/nickeltc:1.0
 
 build_script:

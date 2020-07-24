@@ -9,7 +9,4 @@
 compile_commands.json
 /KoboRoot.tgz
 /libdfh.so
-/../NickelSeries/lib/nh/nh.o
 /dfh.o
-/../NickelSeries/lib/nh/nhplugin.moc
-/../NickelSeries/lib/nh/nhplugin.moc.o

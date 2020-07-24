@@ -10,8 +10,5 @@ compile_commands.json
 /KoboRoot.tgz
 /libns.so
 /../.lib/miniz/miniz.o
-/../.lib/nh/nh.o
 /nickelseries.o
 /metadata.o
-/../.lib/nh/nhplugin.moc
-/../.lib/nh/nhplugin.moc.o
