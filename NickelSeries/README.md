@@ -1,6 +1,6 @@
 # NickelSeries
 
-Adds native support for parsing series metadata from EPUB files.
+Adds native support for parsing series (and subtitle) metadata from EPUB files.
 
 **Features:**
 
@@ -13,6 +13,7 @@ Adds native support for parsing series metadata from EPUB files.
 - Does not modify any system files, single file only.
 - Easy to uninstall (either delete it over telnet/ssh or create a file named `ns_uninstall` in the KOBOeReader partition).
 - Metadata appears instantly.
+- Will also add subtitle metadata (EPUB3 or a Calibre custom column named `#subtitle`).
 
 **Troubleshooting:**
 

@@ -1,4 +1,6 @@
 #include <QByteArray>
+#include <QJsonDocument>
+#include <QJsonObject>
 #include <QMap>
 #include <QPair>
 #include <QString>
@@ -102,13 +104,14 @@ QString const &NSMetadata::error() const {
 }
 
 void NSMetadata::init(QXmlStreamReader &r) {
+    QMap<QString, bool> titles;
     for (int x[4] = {}; !r.atEnd(); r.readNext()) {
         switch (r.tokenType()) {
         case QXmlStreamReader::StartElement:
             switch (++x[0]) {
             case 1: x[1] = r.name() == "package"; break;
             case 2: x[2] = r.name() == "metadata"; break;
-            case 3: x[3] = r.name() == "meta"; break;
+            case 3: x[3] = r.name() == "meta" ? 1 : r.qualifiedName() == "dc:title" ? 2 : 0; break;
             }
             break;
         case QXmlStreamReader::EndElement:
@@ -124,12 +127,38 @@ void NSMetadata::init(QXmlStreamReader &r) {
         if (r.tokenType() != QXmlStreamReader::StartElement || x[0] != 3 || !x[1] || !x[2] || !x[3])
             continue;
 
+        if (x[3] == 2) {
+            QString id = r.attributes().value("id").toString();
+            if (id.isNull())
+                continue;
+            QString text = r.readElementText(QXmlStreamReader::SkipChildElements);
+            if (r.tokenType() == QXmlStreamReader::EndElement)
+                if (x[0]-- == 3)
+                    x[3] = false;
+            if (text.isEmpty())
+                continue;
+            this->subtitle[id] = text;
+            continue;
+        }
+
         QStringRef name = r.attributes().value("name");
         if (name.startsWith("calibre:series")) {
             if (name == "calibre:series")
                 this->series[NSMetadata::calibre].first = r.attributes().value("content").toString();
             else if (name == "calibre:series_index")
                 this->series[NSMetadata::calibre].second = r.attributes().value("content").toString();
+            continue;
+        } else if (name == "calibre:user_metadata:#subtitle") {
+            QJsonDocument doc = QJsonDocument::fromJson(r.attributes().value("content").toString().toUtf8());
+            if (doc.isNull())
+                continue;
+
+            QJsonValue val = doc.object().value("#value#");
+            if (!val.isString())
+                continue;
+
+            this->subtitle[NSMetadata::calibre] = val.toString();
+            titles[NSMetadata::calibre] = true;
             continue;
         }
 
@@ -153,12 +182,31 @@ void NSMetadata::init(QXmlStreamReader &r) {
             else if (!this->series.contains(id) && name == "belongs-to-collection" && !id.isEmpty())
                 this->series[id].first = text;
             continue;
+        } else if (name == "title-type") {
+            if (!r.attributes().value("refines").startsWith("#"))
+                continue;
+            QString id = r.attributes().value("refines").mid(1).toString();
+
+            QString text = r.readElementText(QXmlStreamReader::SkipChildElements);
+            if (r.tokenType() == QXmlStreamReader::EndElement)
+                if (x[0]-- == 3)
+                    x[3] = false;
+            if (text.isEmpty())
+                continue;
+
+            if (text == "subtitle")
+                titles[id] = true;
+            continue;
         }
     }
 
     for (QString source : this->series.keys())
         if (this->series[source].first.isEmpty() || this->series[source].second.isEmpty())
             this->series.remove(source);
+
+    for (QString source : this->subtitle.keys())
+        if (!titles[source] || this->subtitle[source].isEmpty())
+            this->subtitle.remove(source);
 
     if (r.hasError())
         this->_error = QStringLiteral("parse package: %1").arg(r.errorString());

@@ -24,6 +24,18 @@ struct NSMetadata {
     //            meta[property="collection-type"][refines=#id] text   == "series"  || none
     QMap<QString, QPair<QString, QString>> series;
 
+    // subtitle is a map of the element ID to its subtitle. The subtitle will
+    // not be empty. For Calibre metadata, the subtitle must be stored in the
+    // #subtitle custom column.
+    //
+    // Sources:
+    // - Calibre: meta[name="calibre:user_metadata_map:#subtitle"][content] source   =  ns_metadata_t::calibre
+    //                                                                      subtitle =  json([content])["#value#"]
+    // - EPUB3:   dc:title[id]                                              source   =  [id]
+    //                                                                      subtitle =  text
+    //            meta[property="title-type"][refines=#id]                  text     == "subtitle"
+    QMap<QString, QString> subtitle;
+
     // NSMetadata reads metadata from the specified EPUB 2/3 file.
     NSMetadata(QString const &filename);
     NSMetadata(const char *filename);
