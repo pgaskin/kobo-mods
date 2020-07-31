@@ -9,7 +9,6 @@
 #include <miniz.h>
 
 #include "metadata.h"
-#include "qxmlstream.h"
 
 #pragma GCC diagnostic ignored "-Wmissing-field-initializers"
 
