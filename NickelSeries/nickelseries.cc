@@ -87,7 +87,9 @@ static void ns_update_series(Volume *v, QString const& filename) {
         double d = QVariant(index).toDouble(&ok);
         if (ok) {
             nh_log("... simplified series index '%s' to '%s'", qPrintable(index), qPrintable(QString::number(d)));
-            index = QString::number(d);
+            index = d
+                ? QString::number(d)
+                : QString();
         }
 
         nh_log("... Volume::setSeriesName('%s')", qPrintable(series));

@@ -200,7 +200,7 @@ void NSMetadata::init(QXmlStreamReader &r) {
     }
 
     for (QString source : this->series.keys())
-        if (this->series[source].first.isEmpty() || this->series[source].second.isEmpty())
+        if (this->series[source].first.isEmpty())
             this->series.remove(source);
 
     for (QString source : this->subtitle.keys())
