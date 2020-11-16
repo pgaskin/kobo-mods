@@ -6,7 +6,7 @@ DON'T USE THIS IF YOU DON'T NEED IT!
 You can build dictbug-trace with [NickelTC](https://github.com/pgaskin/NickelTC) inside Docker using:
 
 ```sh
-docker run --volume="$PWD:$PWD" --user="$(id --user):$(id --group)" --workdir="$PWD" --env=HOME --entrypoint=make --rm -it docker.io/geek1011/nickeltc:1.0
+docker run --volume="$PWD:$PWD" --user="$(id --user):$(id --group)" --workdir="$PWD" --env=HOME --entrypoint=make --rm -it ghcr.io/pgaskin/nickeltc:1.0
 ```
 
 Or, on the host using:

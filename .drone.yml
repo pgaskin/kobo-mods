@@ -4,7 +4,7 @@ type: docker
 
 steps:
 - name: submodules
-  image: docker.io/geek1011/nickeltc:1.0
+  image: ghcr.io/pgaskin/nickeltc:1.0
   when:
     event: [push, pull_request, tag]
   command: ["git", "submodule", "update", "--init", "--recursive"]
@@ -16,7 +16,7 @@ steps:
   - HOME=./tmp make -f Makefile.native test
   depends_on: [submodules]
 - name: build-kobo
-  image: docker.io/geek1011/nickeltc:1.0
+  image: ghcr.io/pgaskin/nickeltc:1.0
   commands:
   - cd ./kobo-dotfile-hack
   - make
@@ -34,12 +34,12 @@ type: docker
 
 steps:
 - name: submodules
-  image: docker.io/geek1011/nickeltc:1.0
+  image: ghcr.io/pgaskin/nickeltc:1.0
   when:
     event: [push, pull_request, tag]
   command: ["git", "submodule", "update", "--init", "--recursive"]
 - name: build
-  image: docker.io/geek1011/nickeltc:1.0
+  image: ghcr.io/pgaskin/nickeltc:1.0
   commands:
   - cd ./kobo-dotfile-hack-ng
   - make all koboroot
@@ -56,12 +56,12 @@ type: docker
 
 steps:
 - name: submodules
-  image: docker.io/geek1011/nickeltc:1.0
+  image: ghcr.io/pgaskin/nickeltc:1.0
   when:
     event: [push, pull_request, tag]
   command: ["git", "submodule", "update", "--init", "--recursive"]
 - name: build
-  image: docker.io/geek1011/nickeltc:1.0
+  image: ghcr.io/pgaskin/nickeltc:1.0
   commands:
   - cd ./NickelSeries
   - make all koboroot
@@ -78,12 +78,12 @@ type: docker
 
 steps:
 - name: submodules
-  image: docker.io/geek1011/nickeltc:1.0
+  image: ghcr.io/pgaskin/nickeltc:1.0
   when:
     event: [push, pull_request, tag]
   command: ["git", "submodule", "update", "--init", "--recursive"]
 - name: build
-  image: docker.io/geek1011/nickeltc:1.0
+  image: ghcr.io/pgaskin/nickeltc:1.0
   commands:
   - cd ./dictword-test
   - make
@@ -100,12 +100,12 @@ type: docker
 
 steps:
 - name: submodules
-  image: docker.io/geek1011/nickeltc:1.0
+  image: ghcr.io/pgaskin/nickeltc:1.0
   when:
     event: [push, pull_request, tag]
   command: ["git", "submodule", "update", "--init", "--recursive"]
 - name: build
-  image: docker.io/geek1011/nickeltc:1.0
+  image: ghcr.io/pgaskin/nickeltc:1.0
   commands:
   - cd ./dictbug-trace
   - make

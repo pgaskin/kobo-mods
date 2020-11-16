@@ -4,14 +4,14 @@ version: '{build}'
 
 install:
 - git submodule update --init --recursive
-- docker pull docker.io/geek1011/nickeltc:1.0
+- docker pull ghcr.io/pgaskin/nickeltc:1.0
 
 build_script:
-- sh: docker run --rm --volume="$APPVEYOR_BUILD_FOLDER:/src" --workdir="/src/kobo-dotfile-hack"    --entrypoint=make docker.io/geek1011/nickeltc:1.0
-- sh: docker run --rm --volume="$APPVEYOR_BUILD_FOLDER:/src" --workdir="/src/kobo-dotfile-hack-ng" --entrypoint=make docker.io/geek1011/nickeltc:1.0 all koboroot
-- sh: docker run --rm --volume="$APPVEYOR_BUILD_FOLDER:/src" --workdir="/src/NickelSeries"         --entrypoint=make docker.io/geek1011/nickeltc:1.0 all koboroot
-- sh: docker run --rm --volume="$APPVEYOR_BUILD_FOLDER:/src" --workdir="/src/dictword-test"        --entrypoint=make docker.io/geek1011/nickeltc:1.0
-- sh: docker run --rm --volume="$APPVEYOR_BUILD_FOLDER:/src" --workdir="/src/dictbug-trace"        --entrypoint=make docker.io/geek1011/nickeltc:1.0
+- sh: docker run --rm --volume="$APPVEYOR_BUILD_FOLDER:/src" --workdir="/src/kobo-dotfile-hack"    --entrypoint=make ghcr.io/pgaskin/nickeltc:1.0
+- sh: docker run --rm --volume="$APPVEYOR_BUILD_FOLDER:/src" --workdir="/src/kobo-dotfile-hack-ng" --entrypoint=make ghcr.io/pgaskin/nickeltc:1.0 all koboroot
+- sh: docker run --rm --volume="$APPVEYOR_BUILD_FOLDER:/src" --workdir="/src/NickelSeries"         --entrypoint=make ghcr.io/pgaskin/nickeltc:1.0 all koboroot
+- sh: docker run --rm --volume="$APPVEYOR_BUILD_FOLDER:/src" --workdir="/src/dictword-test"        --entrypoint=make ghcr.io/pgaskin/nickeltc:1.0
+- sh: docker run --rm --volume="$APPVEYOR_BUILD_FOLDER:/src" --workdir="/src/dictbug-trace"        --entrypoint=make ghcr.io/pgaskin/nickeltc:1.0
 
 test: off
 
