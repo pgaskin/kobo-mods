@@ -140,7 +140,7 @@ void NSMetadata::init(QXmlStreamReader &r) {
             continue;
         }
 
-        QStringRef name = r.attributes().value("name");
+        QString name = r.attributes().value("name").toString();
         if (name.startsWith("calibre:series")) {
             if (name == "calibre:series")
                 this->series[NSMetadata::calibre].first = r.attributes().value("content").toString();
@@ -161,7 +161,7 @@ void NSMetadata::init(QXmlStreamReader &r) {
             continue;
         }
 
-        name = r.attributes().value("property");
+        name = r.attributes().value("property").toString();
         if (name == "belongs-to-collection" || name == "collection-type" || name == "group-position") {
             QString id = r.attributes().value("refines").startsWith("#")
                 ? r.attributes().value("refines").mid(1).toString()
