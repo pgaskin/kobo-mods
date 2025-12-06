@@ -1,0 +1,48 @@
+name: build
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        include:
+          - name: NickelSeries
+            target: all koboroot
+            artifact: |
+              NickelSeries/libns.so
+              NickelSeries/KoboRoot.tgz
+          - name: kobo-dotfile-hack
+            target:
+            artifact: |
+              kobo-dotfile-hack/KoboRoot.tgz
+          - name: kobo-dotfile-hack-ng
+            target: all koboroot
+            artifact: |
+              kobo-dotfile-hack-ng/libdfh.so
+              kobo-dotfile-hack-ng/KoboRoot.tgz
+          - name: dictword-test
+            target:
+            artifact: |
+              dictword-test/dictword-test.so
+              dictword-test/dwt-wrap
+          - name: dictbug-trace
+            artifact: |
+              dictbug-trace/libdictbug-trace.so
+    name: ${{matrix.name}}
+    runs-on: ubuntu-latest
+    container: ghcr.io/pgaskin/nickeltc:1.0
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          submodules: true
+      - run: make ${{matrix.target}}
+        working-directory: ./${{matrix.name}}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{matrix.name}}
+          path: |
+            ${{matrix.artifact}}
