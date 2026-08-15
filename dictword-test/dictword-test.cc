@@ -9,6 +9,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <dlfcn.h>
+#include <unistd.h>
 
 #pragma region "Shared Code"
 
@@ -16,22 +17,15 @@
 // exiting before a segfault happens...
 class HtmlCallback : public std::runtime_error {
 public:
-    HtmlCallback(QString path) : std::runtime_error("got html path") {
-        this->_path = path;
+    HtmlCallback(QString prefix) : std::runtime_error("got html path") {
+        this->_prefix = prefix;
     }
     ~HtmlCallback() throw() {};
-    QString path() const {
-        return this->_path;
-    };
     QString prefix() const {
-        if (!this->_path.startsWith("/mnt/onboard/.kobo/dict/dicthtml.zip/"))
-            throw std::runtime_error("unexpected format for returned path: doesn't start with /mnt/onboard/.kobo/dict/dicthtml.zip/");
-        if (!this->_path.endsWith(".html"))
-            throw std::runtime_error("unexpected format for returned path: doesn't end with .html");
-        return this->_path.section("/mnt/onboard/.kobo/dict/dicthtml.zip/", -1).section(".html", 0, -2); // everything after /.../, before .html
+        return this->_prefix;
     }
 private:
-    QString _path;
+    QString _prefix;
 };
 
 #pragma endregion
@@ -45,8 +39,21 @@ static int _dwt_main(int argc, char** argv) {
     setbuf(stdout, NULL);
     setbuf(stderr, NULL);
 
-    if (argc < 2) {
-        fprintf(stderr, "Usage: LD_PRELOAD=%s %s word_utf8...\n", argv[0], argv[0]);
+    bool useJapanesePath = false;
+
+    int opt;
+    while ((opt = getopt(argc, argv, "j")) != -1) {
+        switch (opt) {
+            case 'j':
+                fprintf(stderr, "Setting Japanese mode (useJapanesePath=true)\n");
+                useJapanesePath = true;
+                break;
+        }
+    }
+
+    if (optind == argc) {
+        fprintf(stderr, "Usage: LD_PRELOAD=%s %s [-j] word_utf8...\n", argv[0], argv[0]);
+        fprintf(stderr, "Use -j to enable Japanese mode\n");
         return 2;
     }
 
@@ -54,7 +61,7 @@ static int _dwt_main(int argc, char** argv) {
     QScopedPointer<QCoreApplication> app(new QCoreApplication(argc, argv)); // required for libnickel
 
     typedef void* DictionaryParser;
-    typedef void* (*htmlForWord_t)(DictionaryParser, QString const&);
+    typedef void (*htmlForWord_t)(QString* sret, DictionaryParser _this, QString const& word, bool useJapanesePath);
 
     fprintf(stderr, "Loading libnickel\n");
     void* libnickel = dlopen("/usr/local/Kobo/libnickel.so.1.0.0", RTLD_LAZY);
@@ -63,17 +70,19 @@ static int _dwt_main(int argc, char** argv) {
         return 1;
     }
 
-    fprintf(stderr, "Loading DictionaryParser::htmlForWord\n");
-    htmlForWord_t htmlForWord = (htmlForWord_t) dlsym(libnickel, "_ZN16DictionaryParser11htmlForWordERK7QString");
+    const char* htmlForWordSymbol = "_ZNK16DictionaryParser11htmlForWordERK7QStringb";
+    fprintf(stderr, "Loading DictionaryParser::htmlForWord (%s)\n", htmlForWordSymbol);
+    htmlForWord_t htmlForWord = (htmlForWord_t) dlsym(libnickel, htmlForWordSymbol);
     if (!htmlForWord) {
-        fprintf(stderr, "Error: dlsym _ZN16DictionaryParser11htmlForWordERK7QString: %s\n", dlerror());
+        fprintf(stderr, "Error: dlsym %s: %s\n", htmlForWordSymbol, dlerror());
         return 1;
     }
 
     // TODO: reimplement stdin reading, clean up code
 
-    while (--argc) {
-        char *word = *(++argv);
+    argv += optind;
+    while (--argc >= optind) {
+        char *word = *(argv++);
         try {
             QString qword = QString::fromUtf8(word);
             if (qword.isEmpty())
@@ -83,7 +92,11 @@ static int _dwt_main(int argc, char** argv) {
             try {
                 // the this pointer isn't used until after getHtml is called and
                 // triggers the callback, which is why this works
-                htmlForWord(NULL, qword);
+                QString sretBuf; // just scratch space; its contents don't matter since getHtml throws before this returns normally
+                DictionaryParser realThis = calloc(1, 256); // guess at a safe size
+
+                htmlForWord(&sretBuf, realThis, qword, useJapanesePath);
+
                 throw std::runtime_error("callback wasn't called...");
             } catch (HtmlCallback const& cb) {
                 printf("{\"%s\", \"%s\"},\n", word, qPrintable(cb.prefix()));
@@ -107,7 +120,7 @@ static int _dwt_main(int argc, char** argv) {
 // and the beginning of DictionaryParser::getHtml, hence why this whole thing
 // works and why throw an exception here (the stack will still get unwound
 // properly, which is a nice bonus of using this method).
-extern "C" void* _ZN16DictionaryParser7getHtmlERK7QString(void* _this, QString const& path) {
+extern "C" void _ZNK16DictionaryParser7getHtmlERK7QString(void* sret, void* _this, QString const& path) {
     fprintf(stderr, "Intercepting getHtml\n");
     throw HtmlCallback(path);
 }
