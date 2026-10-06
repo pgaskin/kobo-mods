@@ -1,3 +1,4 @@
+#include <QFile>
 #include <QMap>
 #include <QPair>
 #include <QString>
@@ -128,7 +129,16 @@ static void ns_update_series(Volume *v, QString const& filename) {
 
 extern "C" __attribute__((visibility("default"))) void _ns_kepub_parse_hook(EPubParser *_this, QString const& filename, Volume /*const&*/* volume) {
     nh_log("hook: intercepting KEPUB EPubParser::parse for ('%s', %p)", qPrintable(filename), volume);
-    ns_update_series(volume, filename);
+    // For KEPUBs nickel downloads itself (from the Kobo store or a Kobo sync
+    // server like calibre-web), it passes the content ID rather than a path,
+    // and the file lives in .kobo/kepub/<id>.
+    QString path = filename;
+    if (!path.contains('/')) {
+        QString kepub = QString("/mnt/onboard/.kobo/kepub/") + filename;
+        if (QFile::exists(kepub))
+            path = kepub;
+    }
+    ns_update_series(volume, path);
     nh_log("... calling original parser");
     EPubParser__parse(_this, filename, volume);
 }
